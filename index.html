@@ -271,6 +271,42 @@ pre.code .fn{color:#FFD48A}
 pre.code .cm{color:#8A93A3; font-style:italic}
 pre.code .st{color:#9FE0B0}
 
+/* ---------- colophon: the workshop behind the certificate ---------- */
+.colophon{
+  background:var(--ink); color:#E8EAEE;
+  padding:clamp(28px,4.5vw,54px) clamp(20px,4vw,52px);
+}
+.colophon h2{
+  font-size:clamp(21px,2.9vw,31px); letter-spacing:-.025em; font-weight:700;
+  color:#FBFBFC; text-wrap:balance;
+}
+.colo-lede{
+  margin-top:14px; max-width:60ch; font-size:clamp(15.5px,1.7vw,18px);
+  color:#AEB5C0; text-wrap:pretty;
+}
+.colo-grid{
+  margin-top:clamp(26px,3.4vw,38px);
+  display:grid; gap:1px; background:#272C36;
+  border-top:1px solid #272C36; border-bottom:1px solid #272C36;
+  grid-template-columns:1fr;   /* 4 items: 2x2 on desktop, never an orphan cell */
+}
+@media (min-width:700px){ .colo-grid{grid-template-columns:repeat(2,1fr)} }
+.colo-step{background:var(--ink); padding:clamp(18px,2.2vw,24px) clamp(16px,2vw,22px)}
+.colo-step h3{
+  font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:.02em;
+  color:#7FA0FF; margin-bottom:9px;
+}
+.colo-step p{color:#A7AEBA; font-size:14.8px; line-height:1.6; text-wrap:pretty}
+.colo-step code{
+  font-family:var(--mono); font-size:.88em; color:#E8EAEE;
+  background:#1C212B; border:1px solid #2E3542; padding:1px 5px; border-radius:3px;
+}
+.colo-close{
+  margin-top:clamp(24px,3vw,32px); max-width:72ch;
+  color:#A7AEBA; font-size:15.4px; text-wrap:pretty;
+}
+.colo-close b{color:#FBFBFC; font-weight:650}
+
 /* ---------- footer ---------- */
 footer{
   border-top:2px solid var(--ink); padding:clamp(20px,3vw,30px) clamp(20px,4vw,52px);
@@ -543,6 +579,66 @@ footer .who{color:var(--ink); font-weight:700}
       It sits inside DAEMON, an email threat-intelligence console: 28 modules, 130 passing tests,
       standard library at the core. The verifier was validated non-circularly — signed by a
       third-party tool, verified by this code, then re-checked against a deliberately tampered copy.
+    </p>
+  </section>
+
+  <!-- COLOPHON -->
+  <section class="colophon" id="how">
+    <h2>How this was built, honestly</h2>
+    <p class="colo-lede">
+      An AI wrote most of the code on this page. I think you should know that, and I think
+      it matters less than what happened next.
+    </p>
+
+    <div class="colo-grid">
+      <div class="colo-step">
+        <h3>I decided what it had to do</h3>
+        <p>
+          Not &ldquo;build me a DKIM verifier&rdquo; — a specification. No cryptography library.
+          Must recover the padding block rather than compare against a stored answer. Must fail
+          in a way that distinguishes a tampered body from a bad signature, because those are
+          different problems. The constraints are the design work.
+        </p>
+      </div>
+
+      <div class="colo-step">
+        <h3>Then I assumed it was wrong</h3>
+        <p>
+          Code that runs is not code that is right, and AI is unusually good at producing the
+          first while looking like the second. A signature verifier that returns
+          <code>true</code> for everything passes a naive test perfectly.
+        </p>
+      </div>
+
+      <div class="colo-step">
+        <h3>So I made it prove itself twice</h3>
+        <p>
+          The Python and the JavaScript here are two separate implementations of the same
+          specification. I ran them against each other on the cases most likely to break:
+          folded headers, repeated headers, tabs and trailing whitespace, a signed header that
+          is missing, an empty body. Seven cases, byte-identical output. Then the key parser
+          against two real published keys — 2048-bit and 1024-bit — same modulus, same exponent.
+        </p>
+      </div>
+
+      <div class="colo-step">
+        <h3>And I checked it can fail</h3>
+        <p>
+          A verifier that never rejects anything is worthless. This one verifies a message
+          signed by an entirely separate third-party tool, and rejects a deliberately tampered
+          copy. Passing the real one is half the proof; failing the fake one is the other half.
+        </p>
+      </div>
+    </div>
+
+    <p class="colo-close">
+      That is the whole method, and it is not really about cryptography. On a browser extension
+      I built the same way, a review pass found three bugs I had already shipped — a global
+      overwritten instead of chained, a tree-walker miscounting its own depth, a licence check
+      calling the wrong endpoint. None of them crashed. All of them failed silently and looked
+      fine.
+      <b>Anyone can prompt an agent into working code. The job is building the thing that
+      catches it when it quietly lies to you.</b>
     </p>
   </section>
 
