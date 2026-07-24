@@ -75,6 +75,9 @@ h1{
   color:var(--graphite); text-wrap:pretty;
 }
 .dek b{color:var(--ink); font-weight:650}
+.dek a{color:var(--stamp); text-decoration:none; border-bottom:1.5px solid var(--stamp)}
+.dek a:hover{background:var(--stamp-soft)}
+.dek a:focus-visible{outline:2px solid var(--stamp); outline-offset:2px}
 
 /* ---------- spec table ---------- */
 .spec{
@@ -315,6 +318,10 @@ footer .who{color:var(--ink); font-weight:700}
       mine. The JavaScript running here is a second, independent implementation, so the numbers
       below are computed live rather than replayed.
     </p>
+    <p class="dek" style="margin-top:12px">
+      Work through the example, then <a href="#live">paste in one of your own emails</a> — it
+      will fetch the real sender&rsquo;s key from DNS and check their signature too.
+    </p>
 
     <dl class="spec">
       <div><dt>Signing domain</dt><dd>example.com</dd></div>
@@ -456,9 +463,10 @@ footer .who{color:var(--ink); font-weight:700}
     <div class="live-head">
       <h2>Now verify one of your own</h2>
       <p>
-        Open any email in Gmail &rarr; <b>&#8942; &rarr; Show original</b> (Outlook:
-        <b>View source</b>), copy the whole thing, and paste it below. The same code that
-        ran above will fetch the sender&rsquo;s public key from DNS and check their signature.
+        Open any email &mdash; in Gmail that&rsquo;s the <b>More</b> menu &rarr;
+        <b>Show original</b>; in Outlook, <b>View source</b> &mdash; copy the whole thing, and
+        paste it below. The same code that ran above will fetch the sender&rsquo;s public key
+        from DNS and check their signature.
       </p>
       <p class="live-privacy">
         Your email never leaves this page — parsing, hashing and the RSA operation all happen

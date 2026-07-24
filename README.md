@@ -18,6 +18,27 @@ A single self-contained page that takes a real DKIM-signed email and verifies it
 Edit the message body on the page and the body hash stops matching, while the
 header signature stays valid — which is precisely the tampering DKIM exists to detect.
 
+## Verify your own mail
+
+The page also takes a pasted raw message (Gmail: **More -> Show original**) and verifies
+it for real: it parses the `DKIM-Signature` header, canonicalises the headers and body,
+fetches the signer's public key over DNS-over-HTTPS, parses the DER `SubjectPublicKeyInfo`,
+and checks the RSA signature — all client-side.
+
+**Privacy:** the message never leaves your browser. The only outbound request is a DNS
+lookup for the *signing domain and selector* (never your address or the content), because
+the public key has to come from somewhere. Cloudflare is tried first, then Google.
+
+Cross-checked against the Python reference: 7/7 canonicalisation cases byte-identical
+(folded headers, repeated headers, tabs and trailing whitespace, simple canon, a signed
+header that is absent, empty body), and DER parsing agrees on two real published keys
+(a 2048-bit and a 1024-bit).
+
+Limitations, stated plainly: `rsa-sha256` only (not ed25519), the first `DKIM-Signature`
+header is the one checked, and `l=` partial-body signatures are flagged but not
+specially handled. A failure usually means the pasted source was re-wrapped by the
+client — DKIM signs exact bytes.
+
 ## No crypto library
 
 SHA-256 (FIPS 180-4) and modular exponentiation are implemented directly in the
