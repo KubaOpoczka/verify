@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Signature Verification Report — Kuba Opoczka</title>
+<meta name="description" content="A real 2048-bit RSA/DKIM signature, verified in your browser with no crypto library. Change one character of the message and watch the proof collapse.">
+<style>
+:root{
+  --paper:#EFF0F3;
+  --sheet:#FBFBFC;
+  --ink:#101216;
+  --graphite:#525A67;
+  --hair:#D3D6DC;
+  --hair-strong:#B4B9C3;
+  --stamp:#1B44D8;
+  --stamp-soft:#E5EAFB;
+  --fail:#B62C10;
+  --fail-soft:#FBE7E2;
+
+  --sans: system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --mono: ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+
+  --z-sticky:10;
+
+  --e-out: cubic-bezier(.16,1,.3,1);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--paper); color:var(--ink); font-family:var(--sans);
+  font-size:16px; line-height:1.55;
+  padding:clamp(16px,4vw,56px) clamp(12px,4vw,40px);
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:var(--mono)}
+
+/* ---------- sheet ---------- */
+.sheet{
+  max-width:1080px; margin:0 auto; background:var(--sheet);
+  border:1px solid var(--hair-strong);
+  box-shadow:0 1px 0 rgba(16,18,22,.04), 0 24px 60px -40px rgba(16,18,22,.35);
+}
+
+/* ---------- masthead ---------- */
+.masthead{
+  padding:clamp(24px,4vw,44px) clamp(20px,4vw,52px) clamp(20px,3vw,30px);
+  border-bottom:2px solid var(--ink);
+}
+.docline{
+  display:flex; flex-wrap:wrap; gap:10px 18px; align-items:baseline;
+  font-family:var(--mono); font-size:12.5px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--graphite); margin-bottom:22px;
+}
+.docline .who{color:var(--ink); font-weight:700}
+.docline .rule{flex:1 1 40px; height:1px; background:var(--hair-strong); min-width:24px}
+
+h1{
+  font-size:clamp(30px,5.2vw,54px); line-height:1.05; letter-spacing:-.03em;
+  font-weight:700; text-wrap:balance; max-width:26ch;
+}
+.dek{
+  margin-top:18px; max-width:64ch; font-size:clamp(15.5px,1.6vw,17.5px);
+  color:var(--graphite); text-wrap:pretty;
+}
+.dek b{color:var(--ink); font-weight:650}
+
+/* ---------- spec table ---------- */
+.spec{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(172px,1fr));
+  border-top:1px solid var(--hair); margin-top:clamp(22px,3vw,30px);
+}
+.spec div{
+  padding:14px 18px 15px; border-right:1px solid var(--hair);
+  border-bottom:1px solid var(--hair);
+}
+.spec div:last-child{border-right:0}
+.spec dt{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.17em;
+  text-transform:uppercase; color:var(--graphite); margin-bottom:5px;
+}
+.spec dd{font-family:var(--mono); font-size:14px; font-weight:600; overflow-wrap:break-word}
+
+/* ---------- procedure ---------- */
+.proc{padding:clamp(20px,4vw,48px) clamp(20px,4vw,52px) 0}
+
+.step{
+  display:grid; grid-template-columns:auto 1fr; gap:0 clamp(14px,2.4vw,26px);
+  padding-bottom:clamp(26px,4vw,42px);
+}
+.step + .step{border-top:1px solid var(--hair); padding-top:clamp(26px,4vw,40px)}
+
+/* grid/flex children default to min-width:auto, which lets pre-formatted
+   data blocks push the track wider than the viewport. Force them to shrink
+   so the overflow stays inside each scroll container. */
+.step > *, .cmp-row > *, .verdict > *, .spec > div{min-width:0}
+.data, .hex, pre.code{max-width:100%}
+
+.idx{
+  font-family:var(--mono); font-size:13px; font-weight:700; color:var(--stamp);
+  padding-top:4px; width:2.4em; letter-spacing:.02em;
+}
+.step h2{
+  font-size:clamp(18px,2.3vw,23px); letter-spacing:-.015em; font-weight:680;
+  margin-bottom:9px; text-wrap:balance;
+}
+.step p{color:var(--graphite); max-width:68ch; font-size:15.4px; text-wrap:pretty}
+.step p + p{margin-top:9px}
+.step p code{
+  font-family:var(--mono); font-size:.9em; background:var(--paper);
+  border:1px solid var(--hair); padding:1px 5px; border-radius:3px; color:var(--ink);
+}
+
+/* ---------- data blocks ---------- */
+.block{margin-top:16px}
+.block-label{
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.17em;
+  text-transform:uppercase; color:var(--graphite); margin-bottom:7px;
+}
+.data{
+  font-family:var(--mono); font-size:13px; line-height:1.72;
+  background:var(--paper); border:1px solid var(--hair);
+  padding:13px 15px; overflow-x:auto; white-space:pre; color:var(--ink);
+}
+.data.wrap{white-space:pre-wrap; word-break:break-all}
+
+textarea.data{
+  width:100%; display:block; resize:vertical; min-height:96px;
+  white-space:pre-wrap; font-size:13.4px; color:var(--ink);
+}
+textarea.data:focus-visible{outline:2px solid var(--stamp); outline-offset:2px}
+
+/* hash comparison rows */
+.cmp{display:grid; gap:8px; margin-top:14px}
+.cmp-row{
+  display:grid; grid-template-columns:minmax(96px,auto) 1fr; gap:6px 16px;
+  align-items:baseline; font-family:var(--mono); font-size:13px;
+}
+.cmp-key{color:var(--graphite); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase}
+.cmp-val{word-break:break-all}
+
+/* ---------- verdict pill (per step) ---------- */
+.flag{
+  display:inline-flex; align-items:center; gap:7px;
+  font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.13em;
+  text-transform:uppercase; padding:3px 9px 4px; border:1px solid;
+  transition:color .35s var(--e-out), background .35s var(--e-out), border-color .35s var(--e-out);
+}
+.flag .dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.flag[data-state="pending"]{color:var(--graphite); border-color:var(--hair-strong); background:transparent}
+.flag[data-state="ok"]{color:var(--stamp); border-color:var(--stamp); background:var(--stamp-soft)}
+.flag[data-state="bad"]{color:var(--fail); border-color:var(--fail); background:var(--fail-soft)}
+
+/* ---------- hexdump ---------- */
+.hex{
+  font-family:var(--mono); font-size:12.4px; line-height:1.9;
+  background:var(--paper); border:1px solid var(--hair); padding:13px 15px;
+  overflow-x:auto; color:var(--graphite);
+}
+.hex .b{color:var(--ink)}
+.hex .pad{color:var(--hair-strong)}
+.hex .marker{color:var(--stamp); font-weight:700}
+.hex .digest{color:var(--stamp); font-weight:700; background:var(--stamp-soft)}
+.hex .ln{display:block; white-space:pre}
+.hex .off{color:var(--hair-strong); user-select:none}
+
+.legend{
+  display:flex; flex-wrap:wrap; gap:8px 20px; margin-top:11px;
+  font-family:var(--mono); font-size:11.5px; color:var(--graphite);
+}
+.legend i{display:inline-block;width:9px;height:9px;margin-right:6px;vertical-align:-1px}
+
+/* ---------- verdict ---------- */
+.verdict{
+  margin:0 clamp(20px,4vw,52px) clamp(24px,4vw,48px);
+  border:2px solid var(--ink); display:grid;
+  grid-template-columns:1fr auto; align-items:center; gap:20px;
+  padding:clamp(20px,3vw,30px) clamp(20px,3vw,32px);
+}
+.verdict h2{font-size:clamp(20px,2.6vw,27px); letter-spacing:-.02em; font-weight:700}
+.verdict p{color:var(--graphite); font-size:15px; margin-top:7px; max-width:56ch; text-wrap:pretty}
+.verdict[data-state="ok"]{border-color:var(--stamp)}
+.verdict[data-state="bad"]{border-color:var(--fail)}
+.verdict[data-state="ok"] h2{color:var(--stamp)}
+.verdict[data-state="bad"] h2{color:var(--fail)}
+
+.seal{width:112px;height:112px;flex:none}
+.seal circle,.seal path{transition:stroke .4s var(--e-out)}
+.seal .ring{stroke:var(--hair-strong);fill:none}
+.seal .glyph{fill:none;stroke:var(--hair-strong);stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
+.verdict[data-state="ok"] .seal .ring{stroke:var(--stamp)}
+.verdict[data-state="ok"] .seal .glyph{stroke:var(--stamp)}
+.verdict[data-state="bad"] .seal .ring{stroke:var(--fail)}
+.verdict[data-state="bad"] .seal .glyph{stroke:var(--fail)}
+
+.seal .glyph{stroke-dasharray:var(--len,120); stroke-dashoffset:0}
+.seal.draw .glyph{animation:draw .7s var(--e-out) both}
+@keyframes draw{from{stroke-dashoffset:var(--len,120)}to{stroke-dashoffset:0}}
+.seal.pop{animation:pop .5s var(--e-out) both}
+@keyframes pop{0%{transform:scale(.86);opacity:.4}100%{transform:scale(1);opacity:1}}
+
+/* ---------- controls ---------- */
+.controls{
+  display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; align-items:center;
+}
+button{
+  font-family:var(--mono); font-size:12.5px; font-weight:700; letter-spacing:.1em;
+  text-transform:uppercase; padding:10px 15px; cursor:pointer;
+  background:var(--ink); color:var(--sheet); border:1px solid var(--ink);
+  transition:background .2s var(--e-out), color .2s var(--e-out);
+}
+button:hover{background:var(--stamp); border-color:var(--stamp)}
+button.ghost{background:transparent; color:var(--ink)}
+button.ghost:hover{background:var(--ink); color:var(--sheet); border-color:var(--ink)}
+button:focus-visible{outline:2px solid var(--stamp); outline-offset:2px}
+.hint{
+  font-family:var(--mono); font-size:12px; color:var(--graphite);
+  text-transform:none; letter-spacing:0; font-style:italic;
+}
+.block-label .hint::before{content:"— "; font-style:normal; color:var(--hair-strong)}
+
+/* ---------- code exhibit ---------- */
+.exhibit{
+  margin:0 clamp(20px,4vw,52px) clamp(24px,4vw,48px);
+  border-top:1px solid var(--hair); padding-top:clamp(24px,3vw,36px);
+}
+.exhibit h2{font-size:clamp(19px,2.4vw,24px); letter-spacing:-.02em; margin-bottom:10px; font-weight:680}
+.exhibit p{color:var(--graphite); max-width:68ch; font-size:15.4px; text-wrap:pretty}
+pre.code{
+  font-family:var(--mono); font-size:13px; line-height:1.78; margin-top:16px;
+  background:var(--ink); color:#E8EAEE; padding:18px 20px; overflow-x:auto;
+}
+pre.code .kw{color:#9FB4FF}
+pre.code .fn{color:#FFD48A}
+pre.code .cm{color:#8A93A3; font-style:italic}
+pre.code .st{color:#9FE0B0}
+
+/* ---------- footer ---------- */
+footer{
+  border-top:2px solid var(--ink); padding:clamp(20px,3vw,30px) clamp(20px,4vw,52px);
+  display:flex; flex-wrap:wrap; gap:14px 28px; align-items:baseline;
+  font-family:var(--mono); font-size:12.5px; color:var(--graphite);
+}
+footer a{color:var(--stamp); text-decoration:none; border-bottom:1px solid transparent}
+footer a:hover{border-bottom-color:var(--stamp)}
+footer a:focus-visible{outline:2px solid var(--stamp); outline-offset:2px}
+footer .who{color:var(--ink); font-weight:700}
+
+.skip{position:absolute;left:-9999px}
+.skip:focus{left:16px;top:16px;background:var(--ink);color:var(--sheet);padding:10px 14px;z-index:var(--z-sticky)}
+
+@media (max-width:640px){
+  .step{grid-template-columns:1fr; gap:8px}
+  .idx{padding-top:0}
+  .verdict{grid-template-columns:1fr}
+  .seal{width:84px;height:84px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001s!important; transition-duration:.001s!important}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#procedure">Skip to the verification procedure</a>
+
+<main class="sheet">
+
+  <header class="masthead">
+    <div class="docline">
+      <span class="who">Kuba Opoczka</span>
+      <span>Signature Verification Report</span>
+      <span class="rule"></span>
+      <span>RFC&nbsp;6376</span>
+    </div>
+
+    <h1>A real signature, verified in your browser.</h1>
+
+    <p class="dek">
+      This page takes a genuine DKIM-signed email and checks its 2048-bit RSA signature
+      from first principles — canonicalisation, SHA-256, modular exponentiation, PKCS#1&nbsp;v1.5
+      padding — <b>with no cryptography library on either side</b>. The Python implementation is
+      mine. The JavaScript running here is a second, independent implementation, so the numbers
+      below are computed live rather than replayed.
+    </p>
+
+    <dl class="spec">
+      <div><dt>Signing domain</dt><dd>example.com</dd></div>
+      <div><dt>Selector</dt><dd>sel2026</dd></div>
+      <div><dt>Algorithm</dt><dd>rsa-sha256</dd></div>
+      <div><dt>Key size</dt><dd id="spec-bits">2048-bit</dd></div>
+      <div><dt>Canonicalisation</dt><dd>relaxed/relaxed</dd></div>
+      <div><dt>Public exponent</dt><dd>65537</dd></div>
+    </dl>
+  </header>
+
+  <section class="proc" id="procedure">
+
+    <!-- STEP 1 -->
+    <article class="step">
+      <div class="idx">01</div>
+      <div>
+        <h2>Hash the body, compare against the signature&rsquo;s claim</h2>
+        <p>
+          The signature header carries a <code>bh=</code> tag: the SHA-256 hash of the message body
+          after <em>relaxed</em> canonicalisation (collapse runs of whitespace, strip trailing
+          whitespace per line, drop trailing empty lines). If the body changed by one byte after
+          signing, this hash stops matching.
+        </p>
+
+        <div class="block">
+          <div class="block-label">
+            <span>Message body — editable</span>
+            <span class="hint">change anything and the proof collapses</span>
+          </div>
+          <textarea class="data" id="body" spellcheck="false" rows="4" aria-label="Message body, editable"></textarea>
+          <div class="controls">
+            <button class="ghost" id="tamper" type="button">Flip one byte</button>
+            <button class="ghost" id="reset" type="button">Restore original</button>
+          </div>
+        </div>
+
+        <div class="cmp">
+          <div class="cmp-row">
+            <span class="cmp-key">bh= claimed</span>
+            <span class="cmp-val mono" id="bh-claimed"></span>
+          </div>
+          <div class="cmp-row">
+            <span class="cmp-key">bh computed</span>
+            <span class="cmp-val mono" id="bh-computed"></span>
+          </div>
+        </div>
+
+        <div class="block-label" style="margin-top:14px">
+          <span class="flag" id="flag1" data-state="pending"><span class="dot"></span><span>checking</span></span>
+        </div>
+      </div>
+    </article>
+
+    <!-- STEP 2 -->
+    <article class="step">
+      <div class="idx">02</div>
+      <div>
+        <h2>Rebuild the signed header set, hash it</h2>
+        <p>
+          The <code>h=</code> tag lists which headers were signed, in order. Each is canonicalised
+          (name lower-cased, folding removed, whitespace collapsed), then the
+          <code>DKIM-Signature</code> header itself is appended with its own <code>b=</code> value
+          emptied — you cannot sign the signature. This exact byte string is what the RSA signature
+          covers.
+        </p>
+        <div class="block">
+          <div class="block-label"><span>Reconstructed signed data — 324 bytes</span></div>
+          <div class="data" id="signed"></div>
+        </div>
+        <div class="cmp">
+          <div class="cmp-row">
+            <span class="cmp-key">SHA-256</span>
+            <span class="cmp-val mono" id="digest"></span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- STEP 3 -->
+    <article class="step">
+      <div class="idx">03</div>
+      <div>
+        <h2>Recover the padding block with <span class="mono">pow(s, e, n)</span></h2>
+        <p>
+          RSA verification is one modular exponentiation: raise the signature to the public
+          exponent, modulo the public key. What comes back should be a PKCS#1&nbsp;v1.5 block —
+          <code>00 01</code>, a run of <code>FF</code> padding, <code>00</code>, a DER
+          <em>DigestInfo</em> header naming the hash algorithm, and finally the digest itself.
+        </p>
+        <p>
+          Nothing here is a comparison against a stored answer. The digest is <em>recovered</em>
+          from the signature, then matched against what we computed in step 02.
+        </p>
+
+        <div class="block">
+          <div class="block-label"><span>Recovered block <span id="emlen"></span></span></div>
+          <div class="hex" id="hex" aria-label="Recovered PKCS#1 v1.5 padding block"></div>
+          <div class="legend">
+            <span><i style="background:var(--stamp)"></i>structure &amp; recovered digest</span>
+            <span><i style="background:var(--hair-strong)"></i>FF padding</span>
+          </div>
+        </div>
+
+        <div class="cmp">
+          <div class="cmp-row">
+            <span class="cmp-key">Recovered</span>
+            <span class="cmp-val mono" id="em-digest"></span>
+          </div>
+          <div class="cmp-row">
+            <span class="cmp-key">Computed</span>
+            <span class="cmp-val mono" id="em-expect"></span>
+          </div>
+        </div>
+
+        <div class="block-label" style="margin-top:14px">
+          <span class="flag" id="flag3" data-state="pending"><span class="dot"></span><span>checking</span></span>
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+  <!-- VERDICT -->
+  <section class="verdict" id="verdict" data-state="pending" aria-live="polite">
+    <div>
+      <h2 id="verdict-title">Verifying&hellip;</h2>
+      <p id="verdict-note">Running SHA-256 and a 2048-bit modular exponentiation.</p>
+    </div>
+    <svg class="seal" id="seal" viewBox="0 0 120 120" aria-hidden="true">
+      <circle class="ring" cx="60" cy="60" r="56" stroke-width="1.5"/>
+      <circle class="ring" cx="60" cy="60" r="50" stroke-width="4"/>
+      <path class="glyph" id="glyph" d="M38 61.5 l14 14 L84 43"/>
+    </svg>
+  </section>
+
+  <!-- CODE -->
+  <section class="exhibit">
+    <h2>The whole verification is eight lines</h2>
+    <p>
+      This is the function, unedited, from <span class="mono">analyzer/dkim.py</span>. No imports
+      beyond the standard library — the RSA operation is Python&rsquo;s built-in
+      <span class="mono">pow()</span> with three arguments, and the padding check is a byte
+      comparison against a block we rebuild ourselves.
+    </p>
+<pre class="code"><span class="kw">def</span> <span class="fn">_rsa_verify</span>(sig: bytes, digest: bytes, n: int, e: int, hashname: str) -&gt; bool:
+    <span class="kw">if</span> int.from_bytes(sig, <span class="st">"big"</span>) &gt;= n:
+        <span class="kw">return</span> <span class="kw">False</span>
+    k = (n.bit_length() + <span class="st">7</span>) // <span class="st">8</span>
+    em = pow(int.from_bytes(sig, <span class="st">"big"</span>), e, n).to_bytes(k, <span class="st">"big"</span>)
+    t = _DIGEST_PREFIX[hashname] + digest
+    expected = b<span class="st">"\x00\x01"</span> + b<span class="st">"\xff"</span> * (k - len(t) - <span class="st">3</span>) + b<span class="st">"\x00"</span> + t
+    <span class="kw">return</span> em == expected</pre>
+    <p style="margin-top:16px">
+      It sits inside DAEMON, an email threat-intelligence console: 28 modules, 130 passing tests,
+      standard library at the core. The verifier was validated non-circularly — signed by a
+      third-party tool, verified by this code, then re-checked against a deliberately tampered copy.
+    </p>
+  </section>
+
+  <footer>
+    <span class="who">Kuba Opoczka</span>
+    <span>Software &amp; security tooling · Co. Wicklow, Ireland</span>
+    <a href="https://www.linkedin.com/in/kubaopoczka" rel="noopener">LinkedIn</a>
+    <a href="https://github.com/SmellyBricc" rel="noopener">GitHub</a>
+  </footer>
+
+</main>
+
+<script>
+"use strict";
+
+/* ============================================================
+   SHA-256 — plain JS, no crypto library (FIPS 180-4)
+   ============================================================ */
+const K256 = new Uint32Array([
+0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2]);
+
+function sha256(bytes){
+  const ml = bytes.length;
+  const withOne = ml + 1;
+  const zeroPad = ((56 - withOne % 64) + 64) % 64;
+  const buf = new Uint8Array(withOne + zeroPad + 8);
+  buf.set(bytes, 0);
+  buf[ml] = 0x80;
+  const bits = BigInt(ml) * 8n;
+  for (let i = 0; i < 8; i++){
+    buf[buf.length - 1 - i] = Number((bits >> BigInt(8 * i)) & 0xffn);
+  }
+
+  const H = new Uint32Array([0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,
+                             0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19]);
+  const w = new Uint32Array(64);
+  const rotr = (x,n)=> (x>>>n) | (x<<(32-n));
+
+  for (let off = 0; off < buf.length; off += 64){
+    for (let i = 0; i < 16; i++){
+      w[i] = (buf[off+4*i]<<24) | (buf[off+4*i+1]<<16) | (buf[off+4*i+2]<<8) | buf[off+4*i+3];
+    }
+    for (let i = 16; i < 64; i++){
+      const s0 = rotr(w[i-15],7) ^ rotr(w[i-15],18) ^ (w[i-15]>>>3);
+      const s1 = rotr(w[i-2],17) ^ rotr(w[i-2],19) ^ (w[i-2]>>>10);
+      w[i] = (w[i-16] + s0 + w[i-7] + s1) >>> 0;
+    }
+    let [a,b,c,d,e,f,g,h] = H;
+    for (let i = 0; i < 64; i++){
+      const S1 = rotr(e,6) ^ rotr(e,11) ^ rotr(e,25);
+      const ch = (e & f) ^ (~e & g);
+      const t1 = (h + S1 + ch + K256[i] + w[i]) >>> 0;
+      const S0 = rotr(a,2) ^ rotr(a,13) ^ rotr(a,22);
+      const mj = (a & b) ^ (a & c) ^ (b & c);
+      const t2 = (S0 + mj) >>> 0;
+      h=g; g=f; f=e; e=(d + t1)>>>0; d=c; c=b; b=a; a=(t1 + t2)>>>0;
+    }
+    H[0]=(H[0]+a)>>>0; H[1]=(H[1]+b)>>>0; H[2]=(H[2]+c)>>>0; H[3]=(H[3]+d)>>>0;
+    H[4]=(H[4]+e)>>>0; H[5]=(H[5]+f)>>>0; H[6]=(H[6]+g)>>>0; H[7]=(H[7]+h)>>>0;
+  }
+  const out = new Uint8Array(32);
+  for (let i = 0; i < 8; i++){
+    out[4*i]   = (H[i]>>>24)&0xff; out[4*i+1] = (H[i]>>>16)&0xff;
+    out[4*i+2] = (H[i]>>>8)&0xff;  out[4*i+3] = H[i]&0xff;
+  }
+  return out;
+}
+
+/* ============================================================
+   helpers
+   ============================================================ */
+const enc = new TextEncoder();
+const hex   = b => [...b].map(x=>x.toString(16).padStart(2,"0")).join("");
+const b64   = b => btoa(String.fromCharCode(...b));
+const hex2b = h => { const o=new Uint8Array(h.length/2);
+  for(let i=0;i<o.length;i++) o[i]=parseInt(h.substr(2*i,2),16); return o; };
+
+/* RSA: modular exponentiation over BigInt */
+function modPow(base, exp, mod){
+  let r = 1n; base %= mod;
+  while (exp > 0n){
+    if (exp & 1n) r = (r * base) % mod;
+    base = (base * base) % mod;
+    exp >>= 1n;
+  }
+  return r;
+}
+
+/* RFC 6376 §3.4.4 — relaxed body canonicalisation */
+function canonBodyRelaxed(body){
+  const lines = body.replace(/\r\n/g,"\n").replace(/\r/g,"\n").split("\n")
+    .map(l => l.replace(/[ \t]+/g," ").replace(/[ \t]+$/,""));
+  let text = lines.join("\r\n").replace(/(\r\n)+$/,"");
+  return text ? text + "\r\n" : "";
+}
+
+/* ============================================================
+   the real artefacts, extracted from the signed fixture
+   ============================================================ */
+const N_HEX = "d26512e2a4a1d4369b0de3aed93505950ef528033913514ee3a85b9d63978edc7edf9f9e9a347cb59662b1cfa9fce8d88863d6441a262767182ee3684d4eb1ad30d66218fb6c30037b8a88d49c91c88c93104a9fb13589748879437512024cd193bd5159841648dec865d7b3c73f9846d256b292a2ec140c327d87b34bfb13c7481f240fac876e3664247cc8ad25b47225632f818e08ef7b89459ea280ab117d8971661717b1ebdae4c6b700267a74a37d8ef8ea83d719b02585249a0f728d40d8c21e6f822a927eecde78f4a28ab65dfc5472c30d3c4912e8df90b22650e61d2e18eba3247070b726cb32e8290cb39bf914484c26dec8ce726fd48eae0c47cb";
+const SIG_HEX = "0364c6e670bcd4ad702db00a53c8a93ed361fe7686e0f1311cf91d00b69d84a37aaa593da37a6e572f4bd41e62cb5b0a8cfb8816a7cc83b5d20a8f3966bc288f1c199a3626c841e1fc3bc5d6bb1719bd34b6cba94d1a68a372952ebad524aea873512dee9543d12ad824ab3ac765d164eeb9bdbbe953af06c26b3e96d79c14b7de4730bbaf1b975e2003c8174e11575fb0f9069746e50f6388d21394c51a14016ff69dad3dd6e3c88ae6d44b4d625c525555d88c0ce5ff5c85f019a834051d53ab9557875b3cfbc898ae9178589d4a4b20dab4933a4d4c9f28a7798353ae4fc118f4cb7cf00b5a91d57617fb904f3c04af981de4451ae35a77a10149d933b82f";
+const E = 65537n;
+const BH_CLAIMED = "71DlbYYEGnWJtDqW7Uy+OoI0OC7LmNDBXNnFPzBKlks=";
+const SIGNED_DATA = "from:Alice <alice@example.com>\r\nto:Bob <bob@example.net>\r\nsubject:DKIM test message\r\ndate:Thu, 26 Jun 2026 12:00:00 +0000\r\ndkim-signature:v=1; a=rsa-sha256; c=relaxed/relaxed; d=example.com; i=@example.com; q=dns/txt; s=sel2026; t=1782470570; h=from : to : subject : date; bh=71DlbYYEGnWJtDqW7Uy+OoI0OC7LmNDBXNnFPzBKlks=; b=";
+const ORIGINAL_BODY = "Hello Bob,\r\n\r\nThis message is DKIM-signed for testing.\r\n";
+const DIGEST_PREFIX_SHA256 = "3031300d060960864801650304020105000420";
+
+const N = BigInt("0x" + N_HEX);
+const SIG = BigInt("0x" + SIG_HEX);
+
+/* ============================================================
+   render
+   ============================================================ */
+const $ = id => document.getElementById(id);
+const bodyEl = $("body");
+
+function setFlag(el, ok, okText, badText){
+  el.dataset.state = ok ? "ok" : "bad";
+  el.lastElementChild.textContent = ok ? okText : badText;
+}
+
+function hexdump(bytes, digestStart){
+  const rows = [];
+  for (let i = 0; i < bytes.length; i += 16){
+    const chunk = [...bytes.slice(i, i+16)];
+    const cells = chunk.map((v, j) => {
+      const abs = i + j;
+      const h = v.toString(16).padStart(2,"0").toUpperCase();
+      if (abs >= digestStart)            return `<span class="digest">${h}</span>`;
+      if (abs < 2)                       return `<span class="marker">${h}</span>`;
+      if (v === 0xff)                    return `<span class="pad">${h}</span>`;
+      return `<span class="marker">${h}</span>`;
+    });
+    rows.push(`<span class="ln"><span class="off">${i.toString(16).padStart(4,"0")}  </span>${cells.join(" ")}</span>`);
+  }
+  return rows.join("");
+}
+
+let sealTimer = null;
+
+function run(){
+  /* ---- step 1: body hash ---- */
+  const canon = canonBodyRelaxed(bodyEl.value);
+  const bhBytes = sha256(enc.encode(canon));
+  const bhComputed = b64(bhBytes);
+  const bodyOk = bhComputed === BH_CLAIMED;
+
+  $("bh-claimed").textContent = BH_CLAIMED;
+  $("bh-computed").textContent = bhComputed;
+  $("bh-computed").style.color = bodyOk ? "var(--stamp)" : "var(--fail)";
+  setFlag($("flag1"), bodyOk, "body hash matches", "body hash mismatch");
+
+  /* ---- step 2: signed-header digest ---- */
+  const signedBytes = enc.encode(SIGNED_DATA);
+  const digest = sha256(signedBytes);
+  $("signed").textContent = SIGNED_DATA.replace(/\r\n/g,"\n");
+  $("digest").textContent = hex(digest);
+
+  /* ---- step 3: RSA recover ---- */
+  const k = (N.toString(2).length + 7) >> 3;
+  const recovered = modPow(SIG, E, N);
+  let emHex = recovered.toString(16).padStart(k * 2, "0");
+  const em = hex2b(emHex);
+
+  const t = hex2b(DIGEST_PREFIX_SHA256 + hex(digest));
+  const expected = new Uint8Array(k);
+  expected[0] = 0x00; expected[1] = 0x01;
+  expected.fill(0xff, 2, k - t.length - 1);
+  expected[k - t.length - 1] = 0x00;
+  expected.set(t, k - t.length);
+
+  const digestStart = k - 32;
+  $("emlen").textContent = `— ${k} bytes`;
+  $("hex").innerHTML = hexdump(em, digestStart);
+
+  const recoveredDigest = hex(em.slice(digestStart));
+  $("em-digest").textContent = recoveredDigest;
+  $("em-expect").textContent = hex(digest);
+
+  const sigOk = hex(em) === hex(expected);
+  $("em-digest").style.color = sigOk ? "var(--stamp)" : "var(--fail)";
+  setFlag($("flag3"), sigOk, "signature valid", "signature invalid");
+
+  $("spec-bits").textContent = `${N.toString(2).length}-bit`;
+
+  /* ---- verdict ---- */
+  const v = $("verdict"), seal = $("seal"), glyph = $("glyph");
+  const allOk = bodyOk && sigOk;
+  v.dataset.state = allOk ? "ok" : "bad";
+
+  if (allOk){
+    $("verdict-title").textContent = "Verified — message authentic";
+    $("verdict-note").textContent =
+      "The body hash matches and the recovered digest equals the one computed from the signed headers. " +
+      "This message genuinely came from the holder of the example.com private key, unaltered.";
+    glyph.setAttribute("d","M38 61.5 l14 14 L84 43");
+    glyph.style.setProperty("--len","120");
+  } else if (!bodyOk && sigOk){
+    $("verdict-title").textContent = "Failed — body altered after signing";
+    $("verdict-note").textContent =
+      "The header signature is still cryptographically valid, but the body no longer hashes to the " +
+      "value the signer committed to. Someone changed the message in transit — which is exactly what " +
+      "DKIM exists to catch.";
+    glyph.setAttribute("d","M42 42 L78 78 M78 42 L42 78");
+    glyph.style.setProperty("--len","104");
+  } else {
+    $("verdict-title").textContent = "Failed — signature does not verify";
+    $("verdict-note").textContent =
+      "The recovered padding block does not match the expected PKCS#1 v1.5 structure over this digest.";
+    glyph.setAttribute("d","M42 42 L78 78 M78 42 L42 78");
+    glyph.style.setProperty("--len","104");
+  }
+
+  clearTimeout(sealTimer);
+  seal.classList.remove("draw","pop");
+  void seal.offsetWidth;
+  seal.classList.add("draw","pop");
+}
+
+/* ---- wire up ---- */
+bodyEl.value = ORIGINAL_BODY;
+let debounce;
+bodyEl.addEventListener("input", () => {
+  clearTimeout(debounce);
+  debounce = setTimeout(run, 130);
+});
+$("reset").addEventListener("click", () => { bodyEl.value = ORIGINAL_BODY; run(); bodyEl.focus(); });
+$("tamper").addEventListener("click", () => {
+  const v = bodyEl.value;
+  const i = v.toLowerCase().indexOf("bob");
+  bodyEl.value = i >= 0 ? v.slice(0,i) + "Rob" + v.slice(i+3)
+                        : v.replace(/[a-z]/, ch => ch === "z" ? "a" : String.fromCharCode(ch.charCodeAt(0)+1));
+  run(); bodyEl.focus();
+});
+
+run();
+</script>
+</body>
+</html>
