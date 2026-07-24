@@ -16,6 +16,16 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://smellybricc.github.io/verify/og.png">
 <style>
+@font-face{
+  font-family:"Bricolage";
+  src:url("fonts/BricolageGrotesque-var.woff2") format("woff2-variations");
+  font-weight:200 800; font-display:swap;
+}
+@font-face{
+  font-family:"JBMono";
+  src:url("fonts/JetBrainsMono-var.woff2") format("woff2-variations");
+  font-weight:100 800; font-display:swap;
+}
 :root{
   --paper:#EFF0F3;
   --sheet:#FBFBFC;
@@ -28,8 +38,16 @@
   --fail:#B62C10;
   --fail-soft:#FBE7E2;
 
-  --sans: system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
-  --mono: ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  --sans: "Bricolage", system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --mono: "JBMono", ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+
+  /* dark instrument surface */
+  --panel:#0E1015;
+  --panel-2:#161A21;
+  --panel-hair:#242A34;
+  --panel-ink:#EAEDF2;
+  --panel-dim:#A3ABB9;
+  --panel-blue:#7FA0FF;
 
   --z-sticky:10;
 
@@ -95,8 +113,101 @@ h1{
 }
 .spec dd{font-family:var(--mono); font-size:14px; font-weight:600; overflow-wrap:break-word}
 
-/* ---------- procedure ---------- */
-.proc{padding:clamp(20px,4vw,48px) clamp(20px,4vw,52px) 0}
+/* ---------- procedure: the dark instrument inside the paper report ---------- */
+.proc{
+  margin:clamp(20px,3vw,32px) clamp(20px,4vw,52px) 0;
+  padding:clamp(20px,3.4vw,40px) clamp(18px,3vw,36px) 0;
+  background:var(--panel);
+  color:var(--panel-ink);
+  border:1px solid var(--panel-hair);
+  position:relative;
+}
+/* machined corner ticks */
+.proc::before,.proc::after{
+  content:""; position:absolute; width:10px; height:10px; pointer-events:none;
+  border-color:var(--panel-blue); border-style:solid; opacity:.7;
+}
+.proc::before{top:-1px; left:-1px; border-width:1px 0 0 1px}
+.proc::after{top:-1px; right:-1px; border-width:1px 1px 0 0}
+
+.proc-head{
+  display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--panel-dim);
+  padding-bottom:clamp(16px,2.4vw,24px); border-bottom:1px solid var(--panel-hair);
+  margin-bottom:clamp(20px,3vw,32px);
+}
+.proc-head b{color:var(--panel-ink); font-weight:700}
+.proc-head .fill{flex:1 1 30px; height:1px; background:var(--panel-hair); min-width:20px}
+/* NB: do not name this .live — that class is the paste-tool section below. */
+.proc-head .runflag{
+  display:inline-flex; align-items:center; gap:7px; color:var(--panel-blue); font-weight:700;
+}
+.proc-head .led{
+  width:7px;height:7px;border-radius:50%;background:currentColor;
+  box-shadow:0 0 8px currentColor; animation:pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* re-skin the shared pieces when inside the instrument */
+.proc .step + .step{border-top:1px solid var(--panel-hair)}
+.proc .step h2{color:var(--panel-ink)}
+.proc .step p{color:var(--panel-dim)}
+.proc .step p code{
+  background:var(--panel-2); border-color:var(--panel-hair); color:var(--panel-ink);
+}
+.proc .idx{color:var(--panel-blue)}
+.proc .block-label{color:var(--panel-dim)}
+.proc .data{
+  background:var(--panel-2); border-color:var(--panel-hair); color:var(--panel-ink);
+}
+.proc textarea.data{color:var(--panel-ink)}
+.proc textarea.data::placeholder{color:#6E7684}
+.proc .cmp-key{color:var(--panel-dim)}
+.proc .hex{
+  background:var(--panel-2); border-color:var(--panel-hair); color:var(--panel-dim);
+}
+.proc .hex .pad{color:#7C8595}   /* recessive but readable — it is real content */
+.proc .hex .off{color:#8A93A3}
+.proc .hex .marker{color:var(--panel-blue)}
+.proc .hex .digest{color:#BFD0FF; background:rgba(127,160,255,.14); font-weight:700}
+.proc .legend{color:var(--panel-dim)}
+.proc button.ghost{color:var(--panel-ink); border-color:var(--panel-hair)}
+.proc button.ghost:hover{background:var(--panel-blue); border-color:var(--panel-blue); color:var(--panel)}
+.proc .hint{color:var(--panel-dim)}
+.proc .block-label .hint::before{color:#4A5261}
+.proc .flag[data-state="pending"]{color:var(--panel-dim); border-color:var(--panel-hair)}
+.proc .flag[data-state="ok"]{color:#9FB8FF; border-color:#3E5BA8; background:rgba(127,160,255,.12)}
+.proc .flag[data-state="bad"]{color:#FF9C82; border-color:#8A3A24; background:rgba(255,120,90,.12)}
+
+/* measured-time readout on the RSA step */
+.timing{
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.06em;
+  color:var(--panel-dim); margin-top:10px;
+}
+.timing b{color:var(--panel-blue); font-weight:700}
+
+/* byte-resolve animation */
+.hex .cell{transition:color .18s linear}
+.hex.resolving .cell{color:#4A5261}
+
+/* verdict as the instrument's output panel */
+.proc .verdict{
+  margin:clamp(22px,3vw,30px) 0 clamp(20px,3vw,32px);
+  background:var(--panel-2); border-width:1px; border-color:var(--panel-hair);
+}
+.proc .verdict p{color:var(--panel-dim)}
+.proc .verdict[data-state="pending"] h2{color:var(--panel-ink)}
+.proc .verdict[data-state="ok"]{border-color:#3E5BA8; box-shadow:inset 0 0 0 1px rgba(127,160,255,.18)}
+.proc .verdict[data-state="ok"] h2{color:#9FB8FF}
+.proc .verdict[data-state="bad"]{border-color:#8A3A24}
+.proc .verdict[data-state="bad"] h2{color:#FF9C82}
+.proc .verdict .seal .ring{stroke:var(--panel-hair)}
+.proc .verdict .seal .glyph{stroke:var(--panel-hair)}
+.proc .verdict[data-state="ok"] .seal .ring,
+.proc .verdict[data-state="ok"] .seal .glyph{stroke:#7FA0FF}
+.proc .verdict[data-state="bad"] .seal .ring,
+.proc .verdict[data-state="bad"] .seal .glyph{stroke:#FF7A5A}
 
 .step{
   display:grid; grid-template-columns:auto 1fr; gap:0 clamp(14px,2.4vw,26px);
@@ -371,6 +482,13 @@ footer .who{color:var(--ink); font-weight:700}
 
   <section class="proc" id="procedure">
 
+    <div class="proc-head">
+      <b>Verification procedure</b>
+      <span>3 stages</span>
+      <span class="fill"></span>
+      <span class="runflag"><span class="led"></span>running in this browser</span>
+    </div>
+
     <!-- STEP 1 -->
     <article class="step">
       <div class="idx">01</div>
@@ -476,12 +594,11 @@ footer .who{color:var(--ink); font-weight:700}
         <div class="block-label" style="margin-top:14px">
           <span class="flag" id="flag3" data-state="pending"><span class="dot"></span><span>checking</span></span>
         </div>
+        <p class="timing" id="timing"></p>
       </div>
     </article>
 
-  </section>
-
-  <!-- VERDICT -->
+  <!-- VERDICT — the instrument's output -->
   <section class="verdict" id="verdict" data-state="pending" aria-live="polite">
     <div>
       <h2 id="verdict-title">Verifying&hellip;</h2>
@@ -493,6 +610,7 @@ footer .who{color:var(--ink); font-weight:700}
       <path class="glyph" id="glyph" d="M38 61.5 l14 14 L84 43"/>
     </svg>
   </section>
+  </section><!-- /.proc -->
 
   <!-- LIVE TOOL -->
   <section class="live" id="live">
@@ -774,14 +892,35 @@ function hexdump(bytes, digestStart){
     const cells = chunk.map((v, j) => {
       const abs = i + j;
       const h = v.toString(16).padStart(2,"0").toUpperCase();
-      if (abs >= digestStart)            return `<span class="digest">${h}</span>`;
-      if (abs < 2)                       return `<span class="marker">${h}</span>`;
-      if (v === 0xff)                    return `<span class="pad">${h}</span>`;
-      return `<span class="marker">${h}</span>`;
+      const cls = abs >= digestStart ? "digest" : (abs < 2 ? "marker" : (v === 0xff ? "pad" : "marker"));
+      return `<span class="cell ${cls}" data-h="${h}">${h}</span>`;
     });
     rows.push(`<span class="ln"><span class="off">${i.toString(16).padStart(4,"0")}  </span>${cells.join(" ")}</span>`);
   }
   return rows.join("");
+}
+
+/* Bytes settle into place instead of appearing all at once. The values are
+   already correct in data-h; this only animates how they are revealed. */
+const HEXCHARS = "0123456789ABCDEF";
+let resolveTimers = [];
+function resolveHex(el){
+  resolveTimers.forEach(clearTimeout); resolveTimers = [];
+  const cells = [...el.querySelectorAll(".cell")];
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches || !cells.length) return;
+
+  el.classList.add("resolving");
+  const scramble = c => c.textContent =
+    HEXCHARS[(Math.random()*16)|0] + HEXCHARS[(Math.random()*16)|0];
+  cells.forEach(scramble);
+
+  cells.forEach((c, i) => {
+    const settleAt = 90 + i * 3.2;
+    resolveTimers.push(setTimeout(() => scramble(c), settleAt * 0.45));
+    resolveTimers.push(setTimeout(() => { c.textContent = c.dataset.h; }, settleAt));
+  });
+  resolveTimers.push(setTimeout(() => el.classList.remove("resolving"),
+    120 + cells.length * 3.2));
 }
 
 let sealTimer = null;
@@ -804,9 +943,11 @@ function run(){
   $("signed").textContent = SIGNED_DATA.replace(/\r\n/g,"\n");
   $("digest").textContent = hex(digest);
 
-  /* ---- step 3: RSA recover ---- */
+  /* ---- step 3: RSA recover (timed for real) ---- */
   const k = (N.toString(2).length + 7) >> 3;
+  const t0 = performance.now();
   const recovered = modPow(SIG, E, N);
+  const rsaMs = performance.now() - t0;
   let emHex = recovered.toString(16).padStart(k * 2, "0");
   const em = hex2b(emHex);
 
@@ -820,6 +961,10 @@ function run(){
   const digestStart = k - 32;
   $("emlen").textContent = `— ${k} bytes`;
   $("hex").innerHTML = hexdump(em, digestStart);
+  resolveHex($("hex"));
+  $("timing").innerHTML =
+    `${k * 8}-bit modular exponentiation completed in <b>${rsaMs.toFixed(2)} ms</b> ` +
+    `&mdash; measured on your machine, just now.`;
 
   const recoveredDigest = hex(em.slice(digestStart));
   $("em-digest").textContent = recoveredDigest;
