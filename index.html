@@ -231,6 +231,27 @@ button:focus-visible{outline:2px solid var(--stamp); outline-offset:2px}
 }
 .block-label .hint::before{content:"— "; font-style:normal; color:var(--hair-strong)}
 
+/* ---------- live tool ---------- */
+.live{
+  margin:0 clamp(20px,4vw,52px) clamp(24px,4vw,48px);
+  border:2px solid var(--ink); padding:clamp(22px,3vw,34px) clamp(20px,3vw,32px);
+  background:
+    repeating-linear-gradient(-45deg,transparent 0 11px,rgba(27,68,216,.028) 11px 22px),
+    var(--sheet);
+}
+.live-head h2{font-size:clamp(21px,2.7vw,28px); letter-spacing:-.022em; font-weight:700}
+.live-head p{color:var(--graphite); font-size:15.4px; max-width:70ch; margin-top:10px; text-wrap:pretty}
+.live-head p b{color:var(--ink); font-weight:650}
+.live-privacy{
+  border-left:0; border-top:1px solid var(--hair); padding-top:12px; margin-top:14px !important;
+  font-size:14.4px !important;
+}
+.live-spec{margin-top:22px}
+.live-flags{display:flex; flex-wrap:wrap; gap:9px; margin-top:18px}
+.live-verdict{margin:20px 0 0; padding:clamp(18px,2.4vw,24px) clamp(18px,2.4vw,26px)}
+.live-verdict h2{font-size:clamp(18px,2.2vw,23px)}
+#live-status{font-style:italic}
+
 /* ---------- code exhibit ---------- */
 .exhibit{
   margin:0 clamp(20px,4vw,52px) clamp(24px,4vw,48px);
@@ -428,6 +449,69 @@ footer .who{color:var(--ink); font-weight:700}
       <circle class="ring" cx="60" cy="60" r="50" stroke-width="4"/>
       <path class="glyph" id="glyph" d="M38 61.5 l14 14 L84 43"/>
     </svg>
+  </section>
+
+  <!-- LIVE TOOL -->
+  <section class="live" id="live">
+    <div class="live-head">
+      <h2>Now verify one of your own</h2>
+      <p>
+        Open any email in Gmail &rarr; <b>&#8942; &rarr; Show original</b> (Outlook:
+        <b>View source</b>), copy the whole thing, and paste it below. The same code that
+        ran above will fetch the sender&rsquo;s public key from DNS and check their signature.
+      </p>
+      <p class="live-privacy">
+        Your email never leaves this page — parsing, hashing and the RSA operation all happen
+        in your browser. The one thing that goes out is a DNS-over-HTTPS lookup for the
+        <em>signing domain and selector</em> (never your address or the message), because the
+        public key has to come from somewhere. That request goes to Cloudflare, then Google as
+        a fallback.
+      </p>
+    </div>
+
+    <div class="block">
+      <div class="block-label">
+        <span>Raw message source</span>
+        <span class="hint">headers and body, exactly as copied</span>
+      </div>
+      <textarea class="data" id="raw" spellcheck="false" rows="7"
+        placeholder="Paste the full raw email here — it must still include its DKIM-Signature header."
+        aria-label="Raw email source to verify"></textarea>
+      <div class="controls">
+        <button id="run-live" type="button">Verify this message</button>
+        <button class="ghost" id="clear-live" type="button">Clear</button>
+        <span class="hint" id="live-status"></span>
+      </div>
+    </div>
+
+    <div id="live-out" hidden>
+      <dl class="spec live-spec">
+        <div><dt>Signing domain</dt><dd id="lv-domain">—</dd></div>
+        <div><dt>Selector</dt><dd id="lv-selector">—</dd></div>
+        <div><dt>Algorithm</dt><dd id="lv-algo">—</dd></div>
+        <div><dt>Key size</dt><dd id="lv-bits">—</dd></div>
+        <div><dt>Canonicalisation</dt><dd id="lv-canon">—</dd></div>
+        <div><dt>Signed headers</dt><dd id="lv-h">—</dd></div>
+      </dl>
+
+      <div class="live-flags">
+        <span class="flag" id="lv-flag-body" data-state="pending"><span class="dot"></span><span>body hash</span></span>
+        <span class="flag" id="lv-flag-key" data-state="pending"><span class="dot"></span><span>public key</span></span>
+        <span class="flag" id="lv-flag-sig" data-state="pending"><span class="dot"></span><span>signature</span></span>
+      </div>
+
+      <div class="verdict live-verdict" id="lv-verdict" data-state="pending" aria-live="polite">
+        <div>
+          <h2 id="lv-title">Ready</h2>
+          <p id="lv-note">Paste a message and press verify.</p>
+        </div>
+        <svg class="seal" id="lv-seal" viewBox="0 0 120 120" aria-hidden="true">
+          <circle class="ring" cx="60" cy="60" r="56" stroke-width="1.5"/>
+          <circle class="ring" cx="60" cy="60" r="50" stroke-width="4"/>
+          <path class="glyph" id="lv-glyph" d="M38 61.5 l14 14 L84 43"/>
+        </svg>
+      </div>
+    </div>
   </section>
 
   <!-- CODE -->
@@ -694,6 +778,255 @@ $("tamper").addEventListener("click", () => {
 });
 
 run();
+
+
+/* ============================================================
+   LIVE VERIFIER — parse, canonicalise and verify any pasted
+   message. Mirrors analyzer/dkim.py step for step.
+   ============================================================ */
+
+const b64d = s => Uint8Array.from(atob(s.replace(/\s/g,"")), c => c.charCodeAt(0));
+const strip = s => (s || "").replace(/\s/g, "");
+
+function splitMessage(raw){
+  raw = raw.replace(/\r\n/g,"\n").replace(/\r/g,"\n").replace(/\n/g,"\r\n");
+  const i = raw.indexOf("\r\n\r\n");
+  const head = i < 0 ? raw : raw.slice(0, i);
+  const body = i < 0 ? ""  : raw.slice(i + 4);
+  const fields = [];
+  for (const line of head.split("\r\n")){
+    if (/^[ \t]/.test(line) && fields.length){
+      fields[fields.length - 1][1] += "\r\n" + line;      // folded continuation
+    } else if (line.includes(":")){
+      const p = line.indexOf(":");
+      fields.push([line.slice(0, p), line.slice(p + 1)]);
+    }
+  }
+  return { fields, body };
+}
+
+function parseTags(value){
+  const t = {};
+  for (const part of value.split(";")){
+    const i = part.indexOf("=");
+    if (i > 0) t[part.slice(0, i).trim()] = part.slice(i + 1).trim();
+  }
+  return t;
+}
+
+function canonHeaderRelaxed(name, value){
+  value = value.replace(/\r\n/g, "").replace(/[ \t]+/g, " ").trim();
+  return name.trim().toLowerCase() + ":" + value;
+}
+const canonHeader = (n, v, m) => m === "relaxed" ? canonHeaderRelaxed(n, v) : n + ":" + v;
+
+function canonBodySimple(body){
+  body = body.replace(/(\r\n)+$/, "");
+  return body ? body + "\r\n" : "\r\n";
+}
+
+function buildSignedData(fields, tags, dkimIdx, canonH){
+  const names = strip(tags.h).split(":").filter(Boolean);
+  const used = {};
+  const parts = [];
+  for (const nm of names){
+    const lower = nm.toLowerCase();
+    const idxs = [];
+    fields.forEach((f, i) => { if (f[0].trim().toLowerCase() === lower && i !== dkimIdx) idxs.push(i); });
+    const c = used[lower] || 0;
+    used[lower] = c + 1;
+    if (c >= idxs.length) continue;                       // over-signed / absent header
+    const f = fields[idxs[idxs.length - 1 - c]];          // bottom-up, per RFC 6376
+    parts.push(canonHeader(f[0], f[1], canonH));
+  }
+  const dn = fields[dkimIdx][0];
+  const dv = fields[dkimIdx][1].replace(/(b=)[^;]*/, "$1");   // empty the b= tag
+  return parts.map(p => p + "\r\n").join("") + canonHeader(dn, dv, canonH);
+}
+
+/* DER SubjectPublicKeyInfo -> { n, e } */
+function derLen(b, i){
+  let n = b[i]; i += 1;
+  if (n & 0x80){
+    const k = n & 0x7f;
+    n = 0;
+    for (let j = 0; j < k; j++) n = n * 256 + b[i + j];
+    i += k;
+  }
+  return [n, i];
+}
+function parseRsaPubkey(der){
+  if (der[0] !== 0x30) throw new Error("public key is not a DER SEQUENCE");
+  let i; [, i] = derLen(der, 1);
+  if (der[i] !== 0x30) throw new Error("missing AlgorithmIdentifier");
+  let alen, j; [alen, j] = derLen(der, i + 1); i = j + alen;
+  if (der[i] !== 0x03) throw new Error("missing BIT STRING");
+  let blen; [blen, j] = derLen(der, i + 1);
+  const inner = der.slice(j + 1, j + blen);               // skip the unused-bits byte
+  if (inner[0] !== 0x30) throw new Error("missing RSAPublicKey");
+  let k; [, k] = derLen(inner, 1);
+  if (inner[k] !== 0x02) throw new Error("missing modulus");
+  let nlen, m; [nlen, m] = derLen(inner, k + 1);
+  const n = BigInt("0x" + hex(inner.slice(m, m + nlen))); m += nlen;
+  if (inner[m] !== 0x02) throw new Error("missing exponent");
+  let elen, p2; [elen, p2] = derLen(inner, m + 1);
+  const e = BigInt("0x" + hex(inner.slice(p2, p2 + elen)));
+  return { n, e };
+}
+
+async function dohTxt(name){
+  const endpoints = [
+    "https://cloudflare-dns.com/dns-query?type=TXT&name=",
+    "https://dns.google/resolve?type=TXT&name=",
+  ];
+  for (const base of endpoints){
+    try{
+      const r = await fetch(base + encodeURIComponent(name), { headers:{ accept:"application/dns-json" } });
+      if (!r.ok) continue;
+      const j = await r.json();
+      const ans = (j.Answer || [])
+        .map(a => (a.data || ""))
+        .map(s => s.replace(/^"|"$/g, "").replace(/"\s*"/g, ""));   // join split strings
+      if (ans.length) return ans;
+    } catch (_){ /* try the next resolver */ }
+  }
+  return [];
+}
+
+function setLiveVerdict(state, title, note, cross){
+  const v = $("lv-verdict"), seal = $("lv-seal"), glyph = $("lv-glyph");
+  v.dataset.state = state;
+  $("lv-title").textContent = title;
+  $("lv-note").textContent = note;
+  if (cross){ glyph.setAttribute("d","M42 42 L78 78 M78 42 L42 78"); glyph.style.setProperty("--len","104"); }
+  else      { glyph.setAttribute("d","M38 61.5 l14 14 L84 43");      glyph.style.setProperty("--len","120"); }
+  seal.classList.remove("draw","pop"); void seal.offsetWidth; seal.classList.add("draw","pop");
+}
+
+function liveFlag(id, state, text){
+  const el = $(id);
+  el.dataset.state = state;
+  el.lastElementChild.textContent = text;
+}
+
+async function verifyPasted(){
+  const raw = $("raw").value.trim();
+  const status = $("live-status");
+  const out = $("live-out");
+
+  if (!raw){ status.textContent = "Paste a raw message first."; return; }
+  out.hidden = false;
+  status.textContent = "";
+  ["lv-flag-body","lv-flag-key","lv-flag-sig"].forEach(id => liveFlag(id, "pending",
+    id === "lv-flag-body" ? "body hash" : id === "lv-flag-key" ? "public key" : "signature"));
+  setLiveVerdict("pending", "Working…", "Parsing headers and canonicalising the body.");
+
+  let fields, body, tags, dkimIdx;
+  try{
+    ({ fields, body } = splitMessage(raw));
+    dkimIdx = fields.findIndex(f => f[0].trim().toLowerCase() === "dkim-signature");
+    if (dkimIdx < 0) throw new Error("no DKIM-Signature header found — make sure you copied the full raw source, headers included");
+    tags = parseTags(fields[dkimIdx][1]);
+    if (!tags.b || !tags.bh || !tags.d || !tags.s || !tags.h) throw new Error("the DKIM-Signature header is missing required tags");
+  } catch (err){
+    setLiveVerdict("bad", "Could not read the message", err.message, true);
+    return;
+  }
+
+  const algo = strip(tags.a || "rsa-sha256").toLowerCase();
+  const canon = strip(tags.c || "simple/simple").split("/");
+  const canonH = canon[0] || "simple";
+  const canonB = canon[1] || "simple";
+  const domain = strip(tags.d), selector = strip(tags.s);
+
+  $("lv-domain").textContent   = domain;
+  $("lv-selector").textContent = selector;
+  $("lv-algo").textContent     = algo;
+  $("lv-canon").textContent    = canonH + "/" + canonB;
+  $("lv-h").textContent        = strip(tags.h).split(":").filter(Boolean).join(" · ");
+  $("lv-bits").textContent     = "—";
+
+  if (algo !== "rsa-sha256"){
+    setLiveVerdict("bad", "Unsupported algorithm",
+      `This message is signed with ${algo}. This implementation covers rsa-sha256, which is what the overwhelming majority of mail uses.`, true);
+    return;
+  }
+  if (tags.l !== undefined){
+    status.textContent = "note: this signature uses l= (partial body coverage)";
+  }
+
+  /* --- body hash --- */
+  const cbody = canonB === "relaxed" ? canonBodyRelaxed(body) : canonBodySimple(body);
+  const bhComputed = b64(sha256(enc.encode(cbody)));
+  const bodyOk = bhComputed === strip(tags.bh);
+  liveFlag("lv-flag-body", bodyOk ? "ok" : "bad", bodyOk ? "body hash matches" : "body hash mismatch");
+
+  /* --- signed header digest --- */
+  const sd = buildSignedData(fields, tags, dkimIdx, canonH);
+  const digest = sha256(enc.encode(sd));
+
+  /* --- public key from DNS --- */
+  setLiveVerdict("pending", "Fetching the public key…", `Looking up ${selector}._domainkey.${domain} over DNS-over-HTTPS.`);
+  const txts = await dohTxt(`${selector}._domainkey.${domain}`);
+  const joined = txts.join("");
+  const pm = joined.match(/p=\s*([A-Za-z0-9+/=\s]+)/);
+  if (!pm || !strip(pm[1])){
+    liveFlag("lv-flag-key", "bad", "key not found");
+    setLiveVerdict("bad", "Public key not published",
+      `No usable p= record at ${selector}._domainkey.${domain}. The selector may have been rotated out since the message was sent — signatures outlive their keys.`, true);
+    return;
+  }
+
+  let n, e;
+  try{
+    ({ n, e } = parseRsaPubkey(b64d(strip(pm[1]))));
+  } catch (err){
+    liveFlag("lv-flag-key", "bad", "key unreadable");
+    setLiveVerdict("bad", "Could not parse the public key", err.message, true);
+    return;
+  }
+  const bits = n.toString(2).length;
+  $("lv-bits").textContent = bits + "-bit";
+  liveFlag("lv-flag-key", "ok", bits + "-bit key retrieved");
+
+  /* --- RSA --- */
+  let sigOk = false;
+  try{
+    const sig = b64d(strip(tags.b));
+    const sigInt = BigInt("0x" + hex(sig));
+    if (sigInt >= n) throw new Error("signature is not less than the modulus");
+    const k = (bits + 7) >> 3;
+    const em = hex2b(modPow(sigInt, e, n).toString(16).padStart(k * 2, "0"));
+
+    const t = hex2b(DIGEST_PREFIX_SHA256 + hex(digest));
+    const expected = new Uint8Array(k);
+    expected[0] = 0x00; expected[1] = 0x01;
+    expected.fill(0xff, 2, k - t.length - 1);
+    expected[k - t.length - 1] = 0x00;
+    expected.set(t, k - t.length);
+    sigOk = hex(em) === hex(expected);
+  } catch (_){ sigOk = false; }
+
+  liveFlag("lv-flag-sig", sigOk ? "ok" : "bad", sigOk ? "signature valid" : "signature invalid");
+
+  if (bodyOk && sigOk){
+    setLiveVerdict("ok", "Verified — this message is authentic",
+      `The body hashes to the value ${domain} committed to, and the digest recovered from the signature matches the one computed from the signed headers. This really was sent by the holder of ${domain}'s private key, and nothing has been altered since.`);
+  } else if (!bodyOk && sigOk){
+    setLiveVerdict("bad", "Failed — body altered after signing",
+      "The header signature is cryptographically valid, but the body no longer hashes to the signed value. Either the message was modified in transit (a mailing list footer will do it) or the copy you pasted lost some whitespace.", true);
+  } else {
+    setLiveVerdict("bad", "Failed — signature does not verify",
+      `The recovered block does not match a PKCS#1 v1.5 padding of this digest under ${domain}'s key. Most often this means the pasted source was reflowed or re-wrapped, which changes the exact bytes that were signed.`, true);
+  }
+}
+
+$("run-live").addEventListener("click", () => { verifyPasted().catch(err => {
+  setLiveVerdict("bad", "Something went wrong", err.message, true);
+}); });
+$("clear-live").addEventListener("click", () => {
+  $("raw").value = ""; $("live-out").hidden = true; $("live-status").textContent = ""; $("raw").focus();
+});
 </script>
 </body>
 </html>
