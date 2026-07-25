@@ -424,6 +424,9 @@ pre.code .st{color:#9FE0B0}
   color:#A7AEBA; font-size:15.4px; text-wrap:pretty;
 }
 .colo-close b{color:#FBFBFC; font-weight:650}
+.colo-close a{color:#9FB8FF; text-decoration:none; border-bottom:1px solid #4B5F9E}
+.colo-close a:hover{background:rgba(127,160,255,.12)}
+.colo-close a:focus-visible{outline:2px solid #7FA0FF; outline-offset:2px}
 
 /* ---------- footer ---------- */
 footer{
@@ -757,6 +760,8 @@ footer .who{color:var(--ink); font-weight:700}
     </div>
 
     <p class="colo-close">
+      The same logic runs over my CV: <a href="cv/">every claim I make is either checked live
+      against GitHub and npm, open to inspection, or labelled as unverifiable</a>.
       That is the whole method, and it is not really about cryptography. On a browser extension
       I built the same way, a review pass found three bugs I had already shipped — a global
       overwritten instead of chained, a tree-walker miscounting its own depth, a licence check
@@ -772,6 +777,7 @@ footer .who{color:var(--ink); font-weight:700}
     <span>Software &amp; security tooling · Co. Wicklow, Ireland</span>
     <a href="https://www.linkedin.com/in/kubaopoczka" rel="noopener">LinkedIn</a>
     <a href="https://github.com/SmellyBricc" rel="noopener">GitHub</a>
+    <a href="cv/">Auditable CV</a>
   </footer>
 
 </main>

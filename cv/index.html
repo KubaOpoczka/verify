@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Auditable CV — Kuba Opoczka</title>
+<meta name="description" content="A CV that checks itself. Every claim is either verified live against GitHub and npm as this page loads, open to inspection, or marked plainly as unverifiable.">
+<link rel="canonical" href="https://smellybricc.github.io/verify/cv/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://smellybricc.github.io/verify/cv/">
+<meta property="og:title" content="Auditable CV — Kuba Opoczka">
+<meta property="og:description" content="A CV that checks itself. Claims are verified live against GitHub and npm as the page loads — and the ones that can't be are labelled as such.">
+<meta property="og:image" content="https://smellybricc.github.io/verify/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+@font-face{font-family:"Bricolage";src:url("../fonts/BricolageGrotesque-var.woff2") format("woff2-variations");font-weight:200 800;font-display:swap}
+@font-face{font-family:"JBMono";src:url("../fonts/JetBrainsMono-var.woff2") format("woff2-variations");font-weight:100 800;font-display:swap}
+
+:root{
+  --paper:#080A0D;
+  --sheet:#0F1218;
+  --well:#161A21;
+  --ink:#EDF0F5;
+  --graphite:#A6AEBC;
+  --hair:#242A2F;
+  --hair-strong:#333B47;
+  --blue:#7FA0FF;
+  --blue-soft:rgba(127,160,255,.13);
+  --amber:#FFC46B;
+  --amber-soft:rgba(255,196,107,.12);
+  --grey-soft:rgba(166,174,188,.10);
+  --sans:"Bricolage",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --mono:"JBMono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --e:cubic-bezier(.16,1,.3,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--paper); color:var(--ink); font-family:var(--sans);
+  font-size:16px; line-height:1.55; -webkit-font-smoothing:antialiased;
+  padding:clamp(16px,4vw,56px) clamp(12px,4vw,40px);
+}
+.mono{font-family:var(--mono)}
+.sheet{
+  max-width:1000px; margin:0 auto; background:var(--sheet);
+  border:1px solid var(--hair);
+  box-shadow:0 40px 90px -60px rgba(0,0,0,.9);
+}
+
+/* masthead */
+.masthead{padding:clamp(24px,4vw,44px) clamp(20px,4vw,48px) clamp(20px,3vw,28px); border-bottom:1px solid var(--hair-strong)}
+.docline{
+  display:flex; flex-wrap:wrap; gap:10px 18px; align-items:baseline;
+  font-family:var(--mono); font-size:12px; letter-spacing:.17em;
+  text-transform:uppercase; color:var(--graphite); margin-bottom:20px;
+}
+.docline .who{color:var(--ink); font-weight:700}
+.docline .fill{flex:1 1 40px; height:1px; background:var(--hair-strong); min-width:24px}
+h1{font-size:clamp(29px,5.2vw,52px); line-height:1.04; letter-spacing:-.03em; font-weight:700; text-wrap:balance; max-width:24ch}
+.dek{margin-top:16px; max-width:66ch; color:var(--graphite); font-size:clamp(15.5px,1.6vw,17.5px); text-wrap:pretty}
+.dek b{color:var(--ink); font-weight:650}
+.dek a{color:var(--blue); text-decoration:none; border-bottom:1.5px solid var(--blue)}
+.dek a:hover{background:var(--blue-soft)}
+.dek a:focus-visible{outline:2px solid var(--blue); outline-offset:2px}
+
+/* audit status bar */
+.statusbar{
+  display:flex; flex-wrap:wrap; gap:10px 26px; align-items:center;
+  padding:14px clamp(20px,4vw,48px); background:var(--well);
+  border-bottom:1px solid var(--hair);
+  font-family:var(--mono); font-size:12px; letter-spacing:.1em; color:var(--graphite);
+}
+.statusbar b{color:var(--ink); font-weight:700}
+.statusbar .spin{
+  display:inline-block; width:9px; height:9px; border-radius:50%;
+  background:var(--blue); box-shadow:0 0 8px var(--blue);
+  animation:blip 1.1s ease-in-out infinite;
+}
+@keyframes blip{0%,100%{opacity:1}50%{opacity:.25}}
+
+/* claims */
+.claims{padding:clamp(18px,3vw,30px) clamp(20px,4vw,48px) clamp(24px,4vw,44px)}
+.group{margin-top:clamp(24px,3.4vw,36px)}
+.group:first-child{margin-top:6px}
+.group > h2{
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--graphite); padding-bottom:10px; border-bottom:1px solid var(--hair); margin-bottom:4px;
+}
+
+.claim{
+  display:grid; grid-template-columns:1fr auto; gap:6px clamp(14px,2.4vw,24px);
+  align-items:start; padding:16px 0; border-bottom:1px solid var(--hair);
+}
+.claim:last-child{border-bottom:0}
+.claim .what{font-size:15.6px; text-wrap:pretty}
+.claim .what strong{font-weight:650}
+.claim .ev{
+  grid-column:1/-1; font-family:var(--mono); font-size:12.6px; line-height:1.7;
+  color:var(--graphite); word-break:break-word;
+}
+.claim .ev a{color:var(--blue); text-decoration:none; border-bottom:1px solid transparent}
+.claim .ev a:hover{border-bottom-color:var(--blue)}
+.claim .ev a:focus-visible{outline:2px solid var(--blue); outline-offset:2px}
+.claim .ev .val{color:var(--ink); font-weight:600}
+
+.tag{
+  font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.13em;
+  text-transform:uppercase; padding:4px 9px; border:1px solid; white-space:nowrap;
+  display:inline-flex; align-items:center; gap:6px; align-self:start;
+  transition:color .3s var(--e), background .3s var(--e), border-color .3s var(--e);
+}
+.tag .dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+.tag[data-s="checking"]{color:var(--graphite); border-color:var(--hair-strong); background:transparent}
+.tag[data-s="verified"]{color:var(--blue); border-color:#3E5BA8; background:var(--blue-soft)}
+.tag[data-s="inspect"]{color:var(--amber); border-color:#8A6A28; background:var(--amber-soft)}
+.tag[data-s="unverified"]{color:var(--graphite); border-color:var(--hair-strong); background:var(--grey-soft)}
+.tag[data-s="failed"]{color:#FF9C82; border-color:#8A3A24; background:rgba(255,120,90,.12)}
+
+/* honesty note */
+.note{
+  margin:0 clamp(20px,4vw,48px) clamp(26px,4vw,44px);
+  border:1px solid var(--hair-strong); padding:clamp(18px,2.6vw,26px) clamp(18px,2.6vw,26px);
+  background:var(--well);
+}
+.note h2{font-size:clamp(18px,2.3vw,22px); letter-spacing:-.02em; font-weight:700; margin-bottom:10px}
+.note p{color:var(--graphite); font-size:15.2px; max-width:70ch; text-wrap:pretty}
+.note p + p{margin-top:9px}
+.note b{color:var(--ink); font-weight:650}
+
+footer{
+  border-top:1px solid var(--hair-strong); padding:clamp(18px,3vw,26px) clamp(20px,4vw,48px);
+  display:flex; flex-wrap:wrap; gap:12px 26px; align-items:baseline;
+  font-family:var(--mono); font-size:12.4px; color:var(--graphite);
+}
+footer a{color:var(--blue); text-decoration:none; border-bottom:1px solid transparent}
+footer a:hover{border-bottom-color:var(--blue)}
+footer a:focus-visible{outline:2px solid var(--blue); outline-offset:2px}
+footer .who{color:var(--ink); font-weight:700}
+
+.skip{position:absolute;left:-9999px}
+.skip:focus{left:16px;top:16px;background:var(--ink);color:var(--sheet);padding:10px 14px;z-index:10}
+
+@media (max-width:560px){
+  .claim{grid-template-columns:1fr}
+  .tag{grid-row:1; justify-self:start}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001s!important; transition-duration:.001s!important}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#claims">Skip to the claims</a>
+
+<main class="sheet">
+  <header class="masthead">
+    <div class="docline">
+      <span class="who">Kuba Opoczka</span>
+      <span>Auditable CV</span>
+      <span class="fill"></span>
+      <span>Co. Wicklow, Ireland</span>
+    </div>
+    <h1>A CV that checks itself.</h1>
+    <p class="dek">
+      Every CV is a list of claims you are asked to take on trust. This one doesn't ask.
+      As this page loads it queries <b>GitHub</b> and the <b>npm registry</b> directly from
+      your browser and fills in the real numbers — version, publish date, last commit, repository
+      count. Nothing below is typed in by hand.
+    </p>
+    <p class="dek" style="margin-top:12px">
+      Some claims can't be checked by a machine. Those are labelled
+      <span class="mono" style="color:var(--amber)">INSPECT</span> or
+      <span class="mono" style="color:var(--graphite)">NOT PUBLIC</span> rather than dressed up
+      as verified — which is the part I'd actually want you to notice. See also the
+      <a href="../">signature verifier</a>.
+    </p>
+  </header>
+
+  <div class="statusbar" id="statusbar" aria-live="polite">
+    <span><span class="spin" id="spin"></span> <b id="status">Querying GitHub and npm…</b></span>
+    <span id="tally"></span>
+  </div>
+
+  <section class="claims" id="claims">
+
+    <div class="group">
+      <h2>Verified live, as this page loaded</h2>
+
+      <div class="claim">
+        <div class="what"><strong>I publish code publicly under the handle SmellyBricc.</strong></div>
+        <span class="tag" data-s="checking" id="t-user"><span class="dot"></span><span>checking</span></span>
+        <div class="ev" id="e-user">api.github.com/users/SmellyBricc</div>
+      </div>
+
+      <div class="claim">
+        <div class="what"><strong>I have a package published on the npm registry</strong> — <span class="mono">zustand-devtools-bridge</span>, the companion library for my Chrome DevTools extension.</div>
+        <span class="tag" data-s="checking" id="t-npm"><span class="dot"></span><span>checking</span></span>
+        <div class="ev" id="e-npm">registry.npmjs.org/zustand-devtools-bridge</div>
+      </div>
+
+      <div class="claim">
+        <div class="what"><strong>The Zustand DevTools extension source is public and MIT licensed.</strong></div>
+        <span class="tag" data-s="checking" id="t-zd"><span class="dot"></span><span>checking</span></span>
+        <div class="ev" id="e-zd">api.github.com/repos/SmellyBricc/zustand-devtools</div>
+      </div>
+
+      <div class="claim">
+        <div class="what"><strong>The signature verifier you can try is my code, and it is still maintained.</strong></div>
+        <span class="tag" data-s="checking" id="t-verify"><span class="dot"></span><span>checking</span></span>
+        <div class="ev" id="e-verify">api.github.com/repos/SmellyBricc/verify</div>
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>Open to inspection — read the code yourself</h2>
+
+      <div class="claim">
+        <div class="what"><strong>The DKIM verifier is built from first principles: RFC 6376 canonicalisation, DER public-key parsing and PKCS#1 v1.5, with no cryptography library.</strong> The RSA step is a three-argument <span class="mono">pow()</span> and a byte comparison.</div>
+        <span class="tag" data-s="inspect"><span class="dot"></span><span>inspect</span></span>
+        <div class="ev">
+          No API can confirm "no crypto library" — you have to look. The JavaScript implementation
+          is in the page source of the
+          <a href="../">verifier</a> (search <span class="val">_rsa_verify</span> and <span class="val">sha256</span>),
+          and the eight-line Python original is quoted in full there.
+        </div>
+      </div>
+
+      <div class="claim">
+        <div class="what"><strong>96 automated tests in the DevTools extension, across two major framework versions.</strong></div>
+        <span class="tag" data-s="inspect"><span class="dot"></span><span>inspect</span></span>
+        <div class="ev">
+          Count them: <a href="https://github.com/SmellyBricc/zustand-devtools" rel="noopener">github.com/SmellyBricc/zustand-devtools</a>
+          — the suite runs with <span class="val">npm run check</span>.
+        </div>
+      </div>
+
+      <div class="claim">
+        <div class="what"><strong>Two independent implementations of the same specification agree byte for byte</strong> across seven awkward canonicalisation cases — folded headers, repeated headers, tabs and trailing whitespace, a signed header that is absent, an empty body.</div>
+        <span class="tag" data-s="inspect"><span class="dot"></span><span>inspect</span></span>
+        <div class="ev">
+          The method is written up in the <a href="../#how">colophon</a>. The claim is reproducible:
+          paste your own email into the verifier and the same code path runs.
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>Not publicly verifiable — and I'd rather say so</h2>
+
+      <div class="claim">
+        <div class="what"><strong>DAEMON: 28 Python modules, 130 passing tests</strong>, an email threat-intelligence console with campaign correlation and Sigma/YARA rule generation.</div>
+        <span class="tag" data-s="unverified"><span class="dot"></span><span>not public</span></span>
+        <div class="ev">
+          This repository is not public, so you cannot check the number from here. I'll walk through
+          the code or screen-share the suite running on request. The DKIM module from it <em>is</em>
+          public — it's the one running in the <a href="../">verifier</a>.
+        </div>
+      </div>
+
+      <div class="claim">
+        <div class="what"><strong>BABAFlow</strong> (federal-compliance document platform) and <strong>Found Local</strong> (productised web-design service, 31 tests).</div>
+        <span class="tag" data-s="unverified"><span class="dot"></span><span>not public</span></span>
+        <div class="ev">
+          Built, not trading — neither is a running business and I'm not claiming customers or
+          revenue for either. Private repositories; available to review on request.
+        </div>
+      </div>
+
+      <div class="claim">
+        <div class="what"><strong>Two and a half years diagnosing hardware and software faults</strong> at Laptoplabs, Bray; retail at Dunnes Stores; Leaving Certificate 2024, Presentation College Bray.</div>
+        <span class="tag" data-s="unverified"><span class="dot"></span><span>references</span></span>
+        <div class="ev">Ordinary employment history. References available on request — no way to prove it from a web page, and I won't pretend otherwise.</div>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="note">
+    <h2>Why build a CV like this</h2>
+    <p>
+      Because the interesting question about anyone's CV is not what it claims, it's
+      <b>which claims survive checking</b>. Most of a CV can't be verified by a stranger, so the
+      honest move is to make the checkable parts genuinely checkable and mark the rest clearly
+      instead of letting confident formatting do the work.
+    </p>
+    <p>
+      That is the same instinct behind everything else I build. On a browser extension I shipped,
+      a review pass over my own finished code found three bugs I'd already released — none of them
+      crashed, all of them failed silently and looked fine. <b>Code that runs is not code that is
+      right, and a claim that reads well is not a claim that holds.</b> You have to go and check.
+    </p>
+  </section>
+
+  <footer>
+    <span class="who">Kuba Opoczka</span>
+    <span>Software &amp; security tooling</span>
+    <a href="https://www.linkedin.com/in/kubaopoczka" rel="noopener">LinkedIn</a>
+    <a href="https://github.com/SmellyBricc" rel="noopener">GitHub</a>
+    <a href="../">Signature verifier</a>
+  </footer>
+</main>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+
+function setTag(id, state, label){
+  const el = $(id); if(!el) return;
+  el.dataset.s = state;
+  el.lastElementChild.textContent = label;
+}
+const fmtDate = iso => {
+  const d = new Date(iso);
+  return d.toLocaleDateString("en-IE",{day:"numeric",month:"short",year:"numeric"});
+};
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+async function getJSON(url){
+  const r = await fetch(url, {headers:{accept:"application/json"}});
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  return r.json();
+}
+
+/* Each check reports honestly: a failure says so and points you at the source.
+   No fallback numbers — a value shown here was fetched, or it is not shown. */
+const checks = [
+  { tag:"t-user", ev:"e-user",
+    url:"https://api.github.com/users/SmellyBricc",
+    ok(d){
+      return `<span class="val">${d.public_repos}</span> public repositories &middot; account created
+        <span class="val">${fmtDate(d.created_at)}</span> &middot;
+        <a href="https://github.com/SmellyBricc" rel="noopener">github.com/SmellyBricc</a>`;
+    }},
+  { tag:"t-npm", ev:"e-npm",
+    url:"https://registry.npmjs.org/zustand-devtools-bridge",
+    ok(d){
+      const v = d["dist-tags"] && d["dist-tags"].latest;
+      if (!v) throw new Error("no latest tag");
+      return `latest <span class="val">v${esc(v)}</span> &middot; published
+        <span class="val">${fmtDate(d.time[v])}</span> &middot;
+        <a href="https://www.npmjs.com/package/zustand-devtools-bridge" rel="noopener">view on npm</a>`;
+    }},
+  { tag:"t-zd", ev:"e-zd",
+    url:"https://api.github.com/repos/SmellyBricc/zustand-devtools",
+    ok(d){
+      const lic = d.license && d.license.spdx_id ? d.license.spdx_id : "see repo";
+      return `licence <span class="val">${esc(lic)}</span> &middot; language
+        <span class="val">${esc(d.language || "—")}</span> &middot; last push
+        <span class="val">${fmtDate(d.pushed_at)}</span> &middot;
+        <a href="${esc(d.html_url)}" rel="noopener">open repository</a>`;
+    }},
+  { tag:"t-verify", ev:"e-verify",
+    url:"https://api.github.com/repos/SmellyBricc/verify",
+    ok(d){
+      return `last push <span class="val">${fmtDate(d.pushed_at)}</span> &middot; default branch
+        <span class="val">${esc(d.default_branch)}</span> &middot;
+        <a href="${esc(d.html_url)}" rel="noopener">read the source</a>`;
+    }},
+];
+
+(async function runAudit(){
+  let pass = 0, fail = 0;
+  await Promise.all(checks.map(async c => {
+    try{
+      const data = await getJSON(c.url);
+      $(c.ev).innerHTML = c.ok(data);
+      setTag(c.tag, "verified", "verified live");
+      pass++;
+    } catch (err){
+      setTag(c.tag, "failed", "check failed");
+      $(c.ev).innerHTML =
+        `Could not reach the API just now (${esc(err.message)}) — GitHub rate-limits anonymous
+         requests, so this can happen. Check it yourself:
+         <a href="${esc(c.url)}" rel="noopener">${esc(c.url)}</a>`;
+      fail++;
+    }
+  }));
+
+  $("spin").style.animation = "none";
+  $("spin").style.background = fail ? "#FF9C82" : "var(--blue)";
+  $("spin").style.boxShadow = "none";
+  $("status").textContent = fail
+    ? `${pass} of ${checks.length} live checks passed, ${fail} could not be reached`
+    : `All ${checks.length} live checks passed`;
+  const inspect = document.querySelectorAll('.tag[data-s="inspect"]').length;
+  const notpub  = document.querySelectorAll('.tag[data-s="unverified"]').length;
+  $("tally").innerHTML =
+    `<b>${pass}</b> verified live &nbsp;·&nbsp; <b>${inspect}</b> open to inspection &nbsp;·&nbsp; <b>${notpub}</b> not publicly verifiable`;
+})();
+</script>
+</body>
+</html>

@@ -49,6 +49,16 @@ The signature being checked comes from a fixture signed by a third-party tool, s
 verification is non-circular. Only the **public** modulus and the signature are
 embedded here — no private key.
 
+## An auditable CV
+
+`cv/` is a CV that checks itself: <https://smellybricc.github.io/verify/cv/>
+
+As it loads it queries the GitHub and npm registry APIs from the browser and fills in the real
+values — repository count, package version, publish date, licence, last push. Claims a machine
+cannot check are labelled **INSPECT** (read the code) or **NOT PUBLIC** rather than presented as
+verified. If an API is unreachable the row says so and links to the endpoint; it never falls back
+to a hard-coded number.
+
 ## Where it comes from
 
 The reference implementation is `analyzer/dkim.py` in DAEMON, an email
