@@ -454,11 +454,35 @@ const checks = [
 ];
 
 /* the raw responses become the wallpaper */
+/* The API responses carry contact details (npm returns maintainer emails).
+   Rendering those as page decoration would publish an address for scrapers,
+   so personal fields are dropped before anything is painted, and an
+   email-shaped regex sweeps whatever survives. Belt and braces on purpose. */
+const PERSONAL = new Set([
+  "email","maintainers","author","_npmUser","contributors","users",
+  "avatar_url","gravatar_id","bugs","twitter_username","blog","company",
+]);
+function scrub(value){
+  if (Array.isArray(value)) return value.map(scrub);
+  if (value && typeof value === "object"){
+    const out = {};
+    for (const [k, v] of Object.entries(value)){
+      if (PERSONAL.has(k)) continue;
+      out[k] = scrub(v);
+    }
+    return out;
+  }
+  return value;
+}
+const EMAILISH = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g;
+
 function paintTexture(payloads){
   if (!payloads.length) return;
   /* Kept deliberately small: this is decoration, and a megabyte of text nodes
-     behind a scrolling page costs real paint time. ~24KB is plenty to fill it. */
-  const blob = payloads.map(p => JSON.stringify(p).slice(0, 900)).join("   ");
+     behind a scrolling page costs real paint time. ~21KB fills it fine. */
+  const blob = payloads
+    .map(p => JSON.stringify(scrub(p)).replace(EMAILISH, "[redacted]").slice(0, 900))
+    .join("   ");
   const t = $("texture");
   t.textContent = "";
   const d = document.createElement("div");
