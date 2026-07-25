@@ -26,458 +26,467 @@
   src:url("fonts/JetBrainsMono-var.woff2") format("woff2-variations");
   font-weight:100 800; font-display:swap;
 }
+
+/* =============================================================
+   verify — an instrument, not a document and not a terminal.
+   One dark surface. --ink is TEXT ONLY, never a background.
+   No nested cards: sections are separated by rules and space.
+   ============================================================= */
 :root{
-  /* One dark surface. --ink is TEXT; never use it as a background.
-     Backgrounds are --paper (page), --sheet (document), --well (recessed fields). */
-  --paper:#080A0D;
-  --sheet:#0F1218;
-  --well:#161A21;
-  --ink:#EDF0F5;
-  --graphite:#A6AEBC;
-  --hair:#242A2F;
-  --hair-strong:#333B47;
-  --stamp:#7FA0FF;
-  --stamp-soft:rgba(127,160,255,.13);
-  --fail:#FF9C82;
-  --fail-soft:rgba(255,120,90,.13);
-  --dark-surface:#0B0E13;   /* explicit dark for code / colophon blocks */
+  --void:#06070A;          /* the page. everything sits on this */
+  --recess:#0B0E14;        /* recessed data wells (inputs, code) */
+  --recess-2:#11151D;
 
-  --sans: "Bricolage", system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
-  --mono: "JBMono", ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  --ink:#F2F5F9;           /* TEXT ONLY */
+  --dim:#A8B1C0;           /* secondary text — contrast-checked on --void */
+  --faint:#78818F;         /* tertiary; large or mono only */
 
-  /* dark instrument surface */
-  --panel:#151A22;
-  --panel-2:#1E242D;
-  --panel-hair:#303845;
-  --panel-ink:#EAEDF2;
-  --panel-dim:#A3ABB9;
-  --panel-blue:#7FA0FF;
+  --line:#1B212B;
+  --line-2:#2B3341;
+
+  --sig:#3D6BFF;           /* identity blue — matches banner + avatar */
+  --sig-deep:#3763EE;      /* only where WHITE sits on top: white/#3D6BFF is
+                              4.43:1 and 12px bold does not count as large text,
+                              so buttons use this (5.02:1) instead */
+  --sig-lit:#93AEFF;       /* the same signal as TEXT on dark */
+  --sig-glow:rgba(61,107,255,.55);
+  --sig-wash:rgba(61,107,255,.10);
+
+  --fail:#FF4F2E;
+  --fail-lit:#FF9C82;
+  --fail-wash:rgba(255,79,46,.10);
+
+  --sans:"Bricolage",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --mono:"JBMono",ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+
+  --rail:1180px;
+  --pad:clamp(20px,5vw,64px);
 
   --z-sticky:10;
-
-  --e-out: cubic-bezier(.16,1,.3,1);
+  --out:cubic-bezier(.16,1,.3,1);
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%; scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
+
 body{
-  background:var(--paper); color:var(--ink); font-family:var(--sans);
-  font-size:16px; line-height:1.55;
-  padding:clamp(16px,4vw,56px) clamp(12px,4vw,40px);
+  background:var(--void); color:var(--ink);
+  font-family:var(--sans); font-size:clamp(16px,1.15vw,17.5px); line-height:1.62;
   -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
 }
 .mono{font-family:var(--mono)}
 
-/* ---------- sheet ---------- */
-.sheet{
-  max-width:1080px; margin:0 auto; background:var(--sheet);
-  border:1px solid var(--hair-strong);
-  box-shadow:0 0 0 1px rgba(255,255,255,.02), 0 40px 90px -60px rgba(0,0,0,.9);
+.skip{
+  position:absolute; left:-9999px; top:0; z-index:100;
+  background:var(--sig); color:#fff; padding:12px 18px; font-weight:600;
 }
+.skip:focus{left:12px; top:12px}
 
-/* ---------- masthead ---------- */
-.masthead{
-  padding:clamp(24px,4vw,44px) clamp(20px,4vw,52px) clamp(20px,3vw,30px);
-  border-bottom:1px solid var(--hair-strong);
+:focus-visible{outline:2px solid var(--sig-lit); outline-offset:3px}
+
+/* ---- the rail: one column, but sections may bleed out of it ---- */
+.rail{max-width:var(--rail); margin-inline:auto; padding-inline:var(--pad)}
+
+/* full-width hairline that bleeds past the rail */
+.rule{height:1px; background:var(--line); border:0}
+
+/* =============================================================
+   masthead
+   ============================================================= */
+.masthead{padding-block:clamp(28px,6vw,72px) clamp(32px,6vw,68px)}
+
+.ident{
+  display:flex; flex-wrap:wrap; gap:8px 16px; align-items:baseline;
+  font-family:var(--mono); font-size:12px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--faint); margin-bottom:clamp(26px,5vw,54px);
 }
-.docline{
-  display:flex; flex-wrap:wrap; gap:10px 18px; align-items:baseline;
-  font-family:var(--mono); font-size:12.5px; letter-spacing:.16em;
-  text-transform:uppercase; color:var(--graphite); margin-bottom:22px;
-}
-.docline .who{color:var(--ink); font-weight:700}
-.docline .rule{flex:1 1 40px; height:1px; background:var(--hair-strong); min-width:24px}
+.ident b{color:var(--ink); font-weight:700; letter-spacing:.1em}
+.ident .sep{flex:1 1 30px; height:1px; background:var(--line-2); min-width:20px}
 
 h1{
-  font-size:clamp(30px,5.2vw,54px); line-height:1.05; letter-spacing:-.03em;
-  font-weight:700; text-wrap:balance; max-width:26ch;
+  font-size:clamp(40px,7.6vw,92px); line-height:.98; letter-spacing:-.035em;
+  font-weight:700; text-wrap:balance; max-width:15ch;
 }
+h1 .thin{font-weight:300; color:var(--dim)}
+
 .dek{
-  margin-top:18px; max-width:64ch; font-size:clamp(15.5px,1.6vw,17.5px);
-  color:var(--graphite); text-wrap:pretty;
+  margin-top:clamp(20px,2.6vw,32px); max-width:62ch; color:var(--dim);
+  font-size:clamp(16.5px,1.35vw,19px); text-wrap:pretty;
 }
-.dek b{color:var(--ink); font-weight:650}
-.dek a{color:var(--stamp); text-decoration:none; border-bottom:1.5px solid var(--stamp)}
-.dek a:hover{background:var(--stamp-soft)}
-.dek a:focus-visible{outline:2px solid var(--stamp); outline-offset:2px}
+.dek + .dek{margin-top:14px}
+.dek b{color:var(--ink); font-weight:600}
+.dek a{color:var(--sig-lit); text-decoration:none; border-bottom:1.5px solid var(--sig)}
+.dek a:hover{background:var(--sig-wash)}
 
-/* ---------- spec table ---------- */
+/* spec strip — a row of readings, no boxes */
 .spec{
-  /* 6 items: 3x2 / 2x3 / 1x6 — auto-fit stranded the 6th on its own row */
-  display:grid; grid-template-columns:1fr;
-  border-top:1px solid var(--hair); margin-top:clamp(22px,3vw,30px);
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:1px; background:var(--line); border-block:1px solid var(--line);
+  margin-top:clamp(30px,5vw,56px);
 }
-.spec div{
-  padding:14px 18px 15px; border-right:1px solid var(--hair);
-  border-bottom:1px solid var(--hair);
-}
-@media (min-width:620px){ .spec{grid-template-columns:repeat(2,1fr)} }
-@media (min-width:900px){ .spec{grid-template-columns:repeat(3,1fr)} }
-.spec div:last-child{border-right:0}
+.spec > div{background:var(--void); padding:16px 20px 18px}
 .spec dt{
-  font-family:var(--mono); font-size:10.5px; letter-spacing:.17em;
-  text-transform:uppercase; color:var(--graphite); margin-bottom:5px;
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--faint); margin-bottom:7px;
 }
-.spec dd{font-family:var(--mono); font-size:14px; font-weight:600; overflow-wrap:break-word}
+/* "relaxed/relaxed" is the longest reading and must not break mid-word */
+.spec dd{
+  font-family:var(--mono); font-size:14px; font-weight:600;
+  letter-spacing:-.02em; overflow-wrap:normal; word-break:keep-all;
+}
 
-/* ---------- procedure: the dark instrument inside the paper report ---------- */
-.proc{
-  margin:clamp(20px,3vw,32px) clamp(20px,4vw,52px) 0;
-  padding:clamp(20px,3.4vw,40px) clamp(18px,3vw,36px) 0;
-  background:var(--panel);
-  color:var(--panel-ink);
-  border:1px solid var(--panel-hair);
-  position:relative;
+/* =============================================================
+   section scaffold
+   ============================================================= */
+.sec{padding-block:clamp(48px,8vw,110px)}
+.sec-title{
+  font-size:clamp(28px,4.4vw,54px); line-height:1.04; letter-spacing:-.03em;
+  font-weight:700; text-wrap:balance; max-width:20ch;
 }
-/* machined corner ticks */
-.proc::before,.proc::after{
-  content:""; position:absolute; width:10px; height:10px; pointer-events:none;
-  border-color:var(--panel-blue); border-style:solid; opacity:.7;
-}
-.proc::before{top:-1px; left:-1px; border-width:1px 0 0 1px}
-.proc::after{top:-1px; right:-1px; border-width:1px 1px 0 0}
+.sec-lede{margin-top:18px; max-width:60ch; color:var(--dim); text-wrap:pretty}
 
-.proc-head{
-  display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;
-  font-family:var(--mono); font-size:11.5px; letter-spacing:.18em;
-  text-transform:uppercase; color:var(--panel-dim);
-  padding-bottom:clamp(16px,2.4vw,24px); border-bottom:1px solid var(--panel-hair);
-  margin-bottom:clamp(20px,3vw,32px);
+/* running indicator — one, at the top of the procedure. not a per-section eyebrow */
+.runline{
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--faint); margin-bottom:clamp(24px,4vw,44px);
 }
-.proc-head b{color:var(--panel-ink); font-weight:700}
-.proc-head .fill{flex:1 1 30px; height:1px; background:var(--panel-hair); min-width:20px}
-/* NB: do not name this .live — that class is the paste-tool section below. */
-.proc-head .runflag{
-  display:inline-flex; align-items:center; gap:7px; color:var(--panel-blue); font-weight:700;
+.runline .fill{flex:1 1 30px; height:1px; background:var(--line); min-width:20px}
+.runline .on{display:inline-flex; align-items:center; gap:8px; color:var(--sig-lit); font-weight:700}
+.led{
+  width:7px; height:7px; border-radius:50%; background:currentColor;
+  box-shadow:0 0 10px currentColor; animation:pulse 2.4s ease-in-out infinite;
 }
-.proc-head .led{
-  width:7px;height:7px;border-radius:50%;background:currentColor;
-  box-shadow:0 0 8px currentColor; animation:pulse 2.4s ease-in-out infinite;
-}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@media (prefers-reduced-motion:reduce){ .led{animation:none} }
 
-/* re-skin the shared pieces when inside the instrument */
-.proc .step + .step{border-top:1px solid var(--panel-hair)}
-.proc .step h2{color:var(--panel-ink)}
-.proc .step p{color:var(--panel-dim)}
-.proc .step p code{
-  background:var(--panel-2); border-color:var(--panel-hair); color:var(--panel-ink);
-}
-.proc .idx{color:var(--panel-blue)}
-.proc .block-label{color:var(--panel-dim)}
-.proc .data{
-  background:var(--panel-2); border-color:var(--panel-hair); color:var(--panel-ink);
-}
-.proc textarea.data{color:var(--panel-ink)}
-.proc textarea.data::placeholder{color:#6E7684}
-.proc .cmp-key{color:var(--panel-dim)}
-.proc .hex{
-  background:var(--panel-2); border-color:var(--panel-hair); color:var(--panel-dim);
-}
-.proc .hex .pad{color:#8A93A3}   /* recessive but readable — it is real content */
-.proc .hex .off{color:#8A93A3}
-.proc .hex .marker{color:var(--panel-blue)}
-.proc .hex .digest{color:#BFD0FF; background:rgba(127,160,255,.14); font-weight:700}
-.proc .legend{color:var(--panel-dim)}
-.proc button.ghost{color:var(--panel-ink); border-color:var(--panel-hair)}
-.proc button.ghost:hover{background:var(--panel-blue); border-color:var(--panel-blue); color:var(--panel)}
-.proc .hint{color:var(--panel-dim)}
-.proc .block-label .hint::before{color:#4A5261}
-.proc .flag[data-state="pending"]{color:var(--panel-dim); border-color:var(--panel-hair)}
-.proc .flag[data-state="ok"]{color:#9FB8FF; border-color:#3E5BA8; background:rgba(127,160,255,.12)}
-.proc .flag[data-state="bad"]{color:#FF9C82; border-color:#8A3A24; background:rgba(255,120,90,.12)}
-
-/* measured-time readout on the RSA step */
-.timing{
-  font-family:var(--mono); font-size:11.5px; letter-spacing:.06em;
-  color:var(--panel-dim); margin-top:10px;
-}
-.timing b{color:var(--panel-blue); font-weight:700}
-
-/* byte-resolve animation */
-.hex .cell{transition:color .18s linear}
-.hex.resolving .cell{color:#4A5261}
-
-/* verdict as the instrument's output panel */
-.proc .verdict{
-  margin:clamp(22px,3vw,30px) 0 clamp(20px,3vw,32px);
-  background:var(--panel-2); border-width:1px; border-color:var(--panel-hair);
-}
-.proc .verdict p{color:var(--panel-dim)}
-.proc .verdict[data-state="pending"] h2{color:var(--panel-ink)}
-.proc .verdict[data-state="ok"]{border-color:#3E5BA8; box-shadow:inset 0 0 0 1px rgba(127,160,255,.18)}
-.proc .verdict[data-state="ok"] h2{color:#9FB8FF}
-.proc .verdict[data-state="bad"]{border-color:#8A3A24}
-.proc .verdict[data-state="bad"] h2{color:#FF9C82}
-.proc .verdict .seal .ring{stroke:var(--panel-hair)}
-.proc .verdict .seal .glyph{stroke:var(--panel-hair)}
-.proc .verdict[data-state="ok"] .seal .ring,
-.proc .verdict[data-state="ok"] .seal .glyph{stroke:#7FA0FF}
-.proc .verdict[data-state="bad"] .seal .ring,
-.proc .verdict[data-state="bad"] .seal .glyph{stroke:#FF7A5A}
-
+/* =============================================================
+   steps — a real ordered sequence, so the numerals earn their place.
+   They are set large enough to be structure, not decoration.
+   ============================================================= */
 .step{
-  display:grid; grid-template-columns:auto 1fr; gap:0 clamp(14px,2.4vw,26px);
-  padding-bottom:clamp(26px,4vw,42px);
+  display:grid; grid-template-columns:minmax(0,1fr); gap:clamp(18px,2.4vw,28px);
+  padding-block:clamp(34px,5vw,64px);
 }
-.step + .step{border-top:1px solid var(--hair); padding-top:clamp(26px,4vw,40px)}
-
-/* grid/flex children default to min-width:auto, which lets pre-formatted
-   data blocks push the track wider than the viewport. Force them to shrink
-   so the overflow stays inside each scroll container. */
-.step > *, .cmp-row > *, .verdict > *, .spec > div{min-width:0}
-.data, .hex, pre.code{max-width:100%}
-
+.step + .step{border-top:1px solid var(--line)}
+@media (min-width:900px){
+  .step{grid-template-columns:clamp(90px,9vw,140px) minmax(0,1fr); gap:clamp(24px,3vw,44px)}
+}
 .idx{
-  font-family:var(--mono); font-size:13px; font-weight:700; color:var(--stamp);
-  padding-top:4px; width:2.4em; letter-spacing:.02em;
+  font-family:var(--mono); font-weight:700; line-height:.8;
+  font-size:clamp(40px,5.6vw,74px); letter-spacing:-.04em;
+  color:transparent; -webkit-text-stroke:1.4px var(--line-2);
 }
+@supports not (-webkit-text-stroke:1px red){ .idx{color:var(--line-2)} }
 .step h2{
-  font-size:clamp(18px,2.3vw,23px); letter-spacing:-.015em; font-weight:680;
-  margin-bottom:9px; text-wrap:balance;
+  font-size:clamp(21px,2.5vw,30px); line-height:1.16; letter-spacing:-.022em;
+  font-weight:700; text-wrap:balance; max-width:30ch;
 }
-.step p{color:var(--graphite); max-width:68ch; font-size:15.4px; text-wrap:pretty}
-.step p + p{margin-top:9px}
-.step p code{
-  font-family:var(--mono); font-size:.9em; background:var(--paper);
-  border:1px solid var(--hair); padding:1px 5px; border-radius:3px; color:var(--ink);
+.step p{margin-top:14px; color:var(--dim); max-width:66ch; text-wrap:pretty}
+.step p code, code{
+  font-family:var(--mono); font-size:.88em; padding:2px 6px;
+  background:var(--recess-2); color:var(--ink); border:1px solid var(--line-2);
 }
 
-/* ---------- data blocks ---------- */
-.block{margin-top:16px}
-.block-label{
-  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
-  font-family:var(--mono); font-size:10.5px; letter-spacing:.17em;
-  text-transform:uppercase; color:var(--graphite); margin-bottom:7px;
+/* ---- data wells: recessed, not raised. no border on all four sides ---- */
+.well{margin-top:clamp(20px,2.6vw,30px)}
+.well-label{
+  display:flex; gap:12px; align-items:baseline; flex-wrap:wrap;
+  font-family:var(--mono); font-size:11px; letter-spacing:.15em;
+  text-transform:uppercase; color:var(--faint); margin-bottom:10px;
 }
+.well-label .hint{text-transform:none; letter-spacing:.02em; font-style:italic; color:var(--faint)}
+
 .data{
-  font-family:var(--mono); font-size:13px; line-height:1.72;
-  background:var(--paper); border:1px solid var(--hair);
-  padding:13px 15px; overflow-x:auto; white-space:pre; color:var(--ink);
+  width:100%; display:block; background:var(--recess); color:var(--ink);
+  border:1px solid var(--line-2); border-radius:0;
+  font-family:var(--mono); font-size:13.5px; line-height:1.7;
+  padding:16px 18px; white-space:pre-wrap; overflow-wrap:anywhere;
 }
-.data.wrap{white-space:pre-wrap; word-break:break-all}
+textarea.data{resize:vertical; min-height:110px}
+textarea.data:focus{border-color:var(--sig); box-shadow:0 0 0 3px var(--sig-wash); outline:none}
+textarea.data::placeholder{color:var(--faint)}
 
-textarea.data{
-  width:100%; display:block; resize:vertical; min-height:96px;
-  white-space:pre-wrap; font-size:13.4px; color:var(--ink);
+.controls{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; align-items:center}
+button{
+  font-family:var(--mono); font-size:12px; letter-spacing:.13em; text-transform:uppercase;
+  font-weight:700; padding:12px 20px; border:1px solid var(--sig-deep); background:var(--sig-deep);
+  color:#fff; cursor:pointer; transition:transform .18s var(--out), background .18s var(--out);
 }
-textarea.data:focus-visible{outline:2px solid var(--stamp); outline-offset:2px}
+button:hover{background:#2E55D0; transform:translateY(-1px)}
+button:active{transform:translateY(0)}
+button.ghost{background:transparent; color:var(--ink); border-color:var(--line-2)}
+button.ghost:hover{border-color:var(--sig); color:var(--sig-lit); background:var(--sig-wash)}
+@media (prefers-reduced-motion:reduce){ button{transition:none} button:hover{transform:none} }
 
-/* hash comparison rows */
-.cmp{display:grid; gap:8px; margin-top:14px}
+/* comparison rows */
+.cmp{margin-top:clamp(18px,2.2vw,26px); border-top:1px solid var(--line)}
 .cmp-row{
-  display:grid; grid-template-columns:minmax(96px,auto) 1fr; gap:6px 16px;
-  align-items:baseline; font-family:var(--mono); font-size:13px;
+  display:grid; grid-template-columns:minmax(0,1fr); gap:4px;
+  padding:12px 0; border-bottom:1px solid var(--line);
 }
-.cmp-key{color:var(--graphite); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase}
-.cmp-val{word-break:break-all}
+@media (min-width:720px){
+  .cmp-row{grid-template-columns:190px minmax(0,1fr); gap:20px; align-items:baseline}
+}
+.cmp-key{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--faint);
+}
+.cmp-val{font-size:13.5px; overflow-wrap:anywhere; color:var(--ink)}
 
-/* ---------- verdict pill (per step) ---------- */
+/* status flags */
 .flag{
-  display:inline-flex; align-items:center; gap:7px;
-  font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.13em;
-  text-transform:uppercase; padding:3px 9px 4px; border:1px solid;
-  transition:color .35s var(--e-out), background .35s var(--e-out), border-color .35s var(--e-out);
+  display:inline-flex; align-items:center; gap:9px;
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.13em; text-transform:uppercase;
+  font-weight:700; padding:9px 15px; border:1px solid var(--line-2); color:var(--dim);
 }
-.flag .dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
-.flag[data-state="pending"]{color:var(--graphite); border-color:var(--hair-strong); background:transparent}
-.flag[data-state="ok"]{color:var(--stamp); border-color:var(--stamp); background:var(--stamp-soft)}
-.flag[data-state="bad"]{color:var(--fail); border-color:var(--fail); background:var(--fail-soft)}
+.flag .dot{width:8px; height:8px; border-radius:50%; background:currentColor}
+.flag[data-state="ok"]{color:var(--sig-lit); border-color:var(--sig); background:var(--sig-wash)}
+.flag[data-state="ok"] .dot{box-shadow:0 0 10px var(--sig-glow)}
+.flag[data-state="bad"]{color:var(--fail-lit); border-color:var(--fail); background:var(--fail-wash)}
+.flag[data-state="bad"] .dot{box-shadow:0 0 10px rgba(255,79,46,.6)}
+.flag-wrap{margin-top:18px}
 
-/* ---------- hexdump ---------- */
-.hex{
-  font-family:var(--mono); font-size:12.4px; line-height:1.9;
-  background:var(--paper); border:1px solid var(--hair); padding:13px 15px;
-  overflow-x:auto; color:var(--graphite);
+.timing{
+  margin-top:16px; font-family:var(--mono); font-size:12px; color:var(--faint);
+  letter-spacing:.02em;
 }
-.hex .b{color:var(--ink)}
-.hex .pad{color:var(--hair-strong)}
-.hex .marker{color:var(--stamp); font-weight:700}
-.hex .digest{color:var(--stamp); font-weight:700; background:var(--stamp-soft)}
-.hex .ln{display:block; white-space:pre}
-.hex .off{color:var(--hair-strong); user-select:none}
+.timing b{color:var(--sig-lit); font-weight:700}
+
+/* =============================================================
+   THE SIGNATURE DEVICE — the recovered block, made visible.
+   256 real bytes. The PKCS#1 v1.5 structure is the picture:
+   00 01 · a wall of FF padding · 00 · DER header · the digest.
+   Proportions are computed from the actual bytes, never faked.
+   ============================================================= */
+.blockmap{margin-top:clamp(22px,3vw,34px)}
+
+.map-bar{
+  display:flex; height:clamp(56px,7vw,84px); width:100%;
+  border:1px solid var(--line-2); background:var(--recess); overflow:hidden;
+}
+.seg{
+  flex:var(--n) 1 0; min-width:2px; position:relative;
+  transition:background .5s var(--out), box-shadow .5s var(--out);
+}
+/* The build animation lives in JS as a fill:'none' clip-path sweep on the bar
+   itself. Deliberately NOT a CSS animation with fill:backwards + per-segment
+   delay: that holds the START state, so on a backgrounded tab or any renderer
+   that never runs animations the bar stays at scaleX(0) and ships invisible.
+   The default state here is the finished bar; motion is purely additive. */
+.seg-marker{background:var(--sig)}
+/* the FF wall: a real texture, so 202 identical bytes read as mass */
+.seg-pad{
+  background:repeating-linear-gradient(90deg,
+    #131924 0 2px, #1B2331 2px 5px);
+}
+.seg-sep{background:var(--line-2)}
+.seg-der{background:#2C3E7A}
+.seg-digest{
+  background:var(--sig);
+  box-shadow:0 0 34px var(--sig-glow), inset 0 0 0 1px rgba(255,255,255,.16);
+}
+/* when the proof collapses, the recovered block is no longer a valid
+   PKCS#1 structure — the map says so in the failure colour */
+[data-map="bad"] .seg-marker{background:var(--fail)}
+[data-map="bad"] .seg-digest{background:var(--fail); box-shadow:0 0 34px rgba(255,79,46,.55), inset 0 0 0 1px rgba(255,255,255,.16)}
+[data-map="bad"] .seg-der{background:#7A2F22}
+
+.map-scale{
+  display:flex; width:100%; margin-top:9px;
+  font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--faint);
+}
+.map-scale span{
+  flex:var(--n) 1 0; min-width:0; padding-right:8px;
+  border-top:1px solid var(--line-2); padding-top:7px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.map-scale span.lit{color:var(--sig-lit)}
+[data-map="bad"] .map-scale span.lit{color:var(--fail-lit)}
+/* A 1–2 byte segment is ~0.5% of the bar; it can never carry a label without
+   colliding with its neighbour. It keeps its flex space so the remaining
+   labels stay aligned to their segments, but the text is hidden. */
+.map-scale span.drop{visibility:hidden}
+/* narrow viewports: let the labels wrap under their segment rather than
+   ellipsise to something unreadable like "32-B…" */
+@media (max-width:620px){
+  .map-scale{font-size:9px; letter-spacing:.04em; align-items:start}
+  .map-scale span{white-space:normal; overflow:visible; text-overflow:clip; line-height:1.3}
+}
+
+/* the hex itself, below the map */
+.hexgrid{
+  margin-top:clamp(18px,2.4vw,26px);
+  display:grid; grid-template-columns:repeat(16,minmax(0,1fr)); gap:1px;
+  background:var(--line); border:1px solid var(--line-2);
+}
+@media (min-width:900px){ .hexgrid{grid-template-columns:repeat(32,minmax(0,1fr))} }
+.cell{
+  background:var(--recess); color:var(--faint);
+  font-family:var(--mono); font-size:clamp(8.5px,.85vw,11px); font-weight:600;
+  text-align:center; padding:6px 0; font-variant-numeric:tabular-nums;
+  transition:color .3s var(--out), background .3s var(--out);
+}
+.cell.marker{color:var(--sig-lit); background:var(--recess-2)}
+/* the FF bytes are real content, not chrome — recessive but readable (4.91:1) */
+.cell.pad{color:var(--faint)}
+.cell.der{color:#A8BEFF; background:rgba(44,62,122,.30)}
+.cell.digest{color:#DCE6FF; background:rgba(61,107,255,.22); font-weight:700}
+[data-map="bad"] .cell.digest{color:#FFD9CF; background:rgba(255,79,46,.22)}
+[data-map="bad"] .cell.marker{color:var(--fail-lit)}
+.hexgrid.resolving .cell{color:var(--faint); background:var(--recess)}
 
 .legend{
-  display:flex; flex-wrap:wrap; gap:8px 20px; margin-top:11px;
-  font-family:var(--mono); font-size:11.5px; color:var(--graphite);
+  display:flex; gap:20px; flex-wrap:wrap; margin-top:14px;
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--faint);
 }
-.legend i{display:inline-block;width:9px;height:9px;margin-right:6px;vertical-align:-1px}
+.legend i{display:inline-block; width:13px; height:13px; margin-right:8px; vertical-align:-2px}
 
-/* ---------- verdict ---------- */
+/* =============================================================
+   verdict — the instrument's output. full-bleed, unmissable.
+   ============================================================= */
 .verdict{
-  margin:0 clamp(20px,4vw,52px) clamp(24px,4vw,48px);
-  border:1px solid var(--hair-strong); display:grid;
-  grid-template-columns:1fr auto; align-items:center; gap:20px;
-  padding:clamp(20px,3vw,30px) clamp(20px,3vw,32px);
-}
-.verdict h2{font-size:clamp(20px,2.6vw,27px); letter-spacing:-.02em; font-weight:700}
-.verdict p{color:var(--graphite); font-size:15px; margin-top:7px; max-width:56ch; text-wrap:pretty}
-.verdict[data-state="ok"]{border-color:var(--stamp)}
-.verdict[data-state="bad"]{border-color:var(--fail)}
-.verdict[data-state="ok"] h2{color:var(--stamp)}
-.verdict[data-state="bad"] h2{color:var(--fail)}
-
-.seal{width:112px;height:112px;flex:none}
-.seal circle,.seal path{transition:stroke .4s var(--e-out)}
-.seal .ring{stroke:var(--hair-strong);fill:none}
-.seal .glyph{fill:none;stroke:var(--hair-strong);stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
-.verdict[data-state="ok"] .seal .ring{stroke:var(--stamp)}
-.verdict[data-state="ok"] .seal .glyph{stroke:var(--stamp)}
-.verdict[data-state="bad"] .seal .ring{stroke:var(--fail)}
-.verdict[data-state="bad"] .seal .glyph{stroke:var(--fail)}
-
-.seal .glyph{stroke-dasharray:var(--len,120); stroke-dashoffset:0}
-.seal.draw .glyph{animation:draw .7s var(--e-out) both}
-@keyframes draw{from{stroke-dashoffset:var(--len,120)}to{stroke-dashoffset:0}}
-.seal.pop{animation:pop .5s var(--e-out) both}
-@keyframes pop{0%{transform:scale(.86);opacity:.4}100%{transform:scale(1);opacity:1}}
-
-/* ---------- controls ---------- */
-.controls{
-  display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; align-items:center;
-}
-button{
-  font-family:var(--mono); font-size:12.5px; font-weight:700; letter-spacing:.1em;
-  text-transform:uppercase; padding:10px 15px; cursor:pointer;
-  background:var(--ink); color:var(--sheet); border:1px solid var(--ink);
-  transition:background .2s var(--e-out), color .2s var(--e-out);
-}
-button:hover{background:var(--stamp); border-color:var(--stamp)}
-button.ghost{background:transparent; color:var(--ink)}
-button.ghost:hover{background:var(--ink); color:var(--sheet); border-color:var(--ink)}
-button:focus-visible{outline:2px solid var(--stamp); outline-offset:2px}
-.hint{
-  font-family:var(--mono); font-size:12px; color:var(--graphite);
-  text-transform:none; letter-spacing:0; font-style:italic;
-}
-.block-label .hint::before{content:"— "; font-style:normal; color:var(--hair-strong)}
-
-/* ---------- live tool ---------- */
-.live{
-  margin:0 clamp(20px,4vw,52px) clamp(24px,4vw,48px);
-  border:1px solid var(--hair-strong); padding:clamp(22px,3vw,34px) clamp(20px,3vw,32px);
+  border-block:1px solid var(--line-2);
   background:
-    repeating-linear-gradient(-45deg,transparent 0 11px,rgba(27,68,216,.028) 11px 22px),
-    var(--sheet);
+    radial-gradient(120% 180% at 88% 50%, var(--sig-wash) 0%, transparent 62%);
+  transition:background .6s var(--out), border-color .6s var(--out);
 }
-.live-head h2{font-size:clamp(21px,2.7vw,28px); letter-spacing:-.022em; font-weight:700}
-.live-head p{color:var(--graphite); font-size:15.4px; max-width:70ch; margin-top:10px; text-wrap:pretty}
-.live-head p b{color:var(--ink); font-weight:650}
-.live-privacy{
-  border-left:0; border-top:1px solid var(--hair); padding-top:12px; margin-top:14px !important;
-  font-size:14.4px !important;
+.verdict[data-state="bad"]{
+  background:radial-gradient(120% 180% at 88% 50%, var(--fail-wash) 0%, transparent 62%);
 }
-.live-spec{margin-top:22px}
-.live-flags{display:flex; flex-wrap:wrap; gap:9px; margin-top:18px}
-.live-verdict{margin:20px 0 0; padding:clamp(18px,2.4vw,24px) clamp(18px,2.4vw,26px)}
-.live-verdict h2{font-size:clamp(18px,2.2vw,23px)}
-#live-status{font-style:italic}
+.verdict-in{
+  display:grid; grid-template-columns:minmax(0,1fr); gap:clamp(24px,4vw,48px);
+  align-items:center; padding-block:clamp(38px,6vw,72px);
+}
+@media (min-width:820px){ .verdict-in{grid-template-columns:minmax(0,1fr) auto} }
+.verdict h2{
+  font-size:clamp(26px,4.2vw,50px); line-height:1.04; letter-spacing:-.03em;
+  font-weight:700; text-wrap:balance;
+}
+.verdict[data-state="ok"] h2{color:var(--sig-lit)}
+.verdict[data-state="bad"] h2{color:var(--fail-lit)}
+.verdict p{margin-top:14px; color:var(--dim); max-width:56ch; text-wrap:pretty}
 
-/* ---------- code exhibit ---------- */
-.exhibit{
-  margin:0 clamp(20px,4vw,52px) clamp(24px,4vw,48px);
-  border-top:1px solid var(--hair); padding-top:clamp(24px,3vw,36px);
+.seal{width:clamp(84px,11vw,132px); height:auto; flex:none; justify-self:start}
+@media (min-width:820px){ .seal{justify-self:end} }
+.seal .ring{fill:none; stroke:var(--line-2)}
+.verdict[data-state="ok"] .seal .ring{stroke:var(--sig)}
+.verdict[data-state="bad"] .seal .ring{stroke:var(--fail)}
+.seal .glyph{
+  fill:none; stroke:var(--dim); stroke-width:9; stroke-linecap:square; stroke-linejoin:miter;
 }
-.exhibit h2{font-size:clamp(19px,2.4vw,24px); letter-spacing:-.02em; margin-bottom:10px; font-weight:680}
-.exhibit p{color:var(--graphite); max-width:68ch; font-size:15.4px; text-wrap:pretty}
-pre.code{
-  font-family:var(--mono); font-size:13px; line-height:1.78; margin-top:16px;
-  background:var(--dark-surface); color:#E8EAEE; padding:18px 20px; overflow-x:auto;
+.verdict[data-state="ok"] .seal .glyph{stroke:var(--sig-lit)}
+.verdict[data-state="bad"] .seal .glyph{stroke:var(--fail-lit)}
+.seal.draw .glyph{
+  stroke-dasharray:var(--len,120); stroke-dashoffset:var(--len,120);
+  animation:draw .6s var(--out) forwards;
 }
-pre.code .kw{color:#9FB4FF}
-pre.code .fn{color:#FFD48A}
-pre.code .cm{color:#8A93A3; font-style:italic}
-pre.code .st{color:#9FE0B0}
+.seal.pop{animation:pop .5s var(--out)}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes pop{0%{transform:scale(.94)}60%{transform:scale(1.02)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){
+  .seal.draw .glyph{animation:none; stroke-dashoffset:0}
+  .seal.pop{animation:none}
+  .verdict,.seg,.cell{transition:none}
+}
 
-/* ---------- colophon: the workshop behind the certificate ---------- */
-.colophon{
-  background:var(--dark-surface); color:#E8EAEE;
-  padding:clamp(28px,4.5vw,54px) clamp(20px,4vw,52px);
+/* =============================================================
+   paste tool  (class .paste — NOT .live; .live was the old name
+   and reusing it caused a white-background bug)
+   ============================================================= */
+.paste-privacy{
+  margin-top:16px; padding-left:18px; border-left:1px solid var(--line-2);
+  color:var(--faint); font-size:15px; max-width:62ch;
 }
-.colophon h2{
-  font-size:clamp(21px,2.9vw,31px); letter-spacing:-.025em; font-weight:700;
-  color:#FBFBFC; text-wrap:balance;
+.paste-privacy em{color:var(--dim); font-style:italic}
+.flags-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:clamp(20px,3vw,28px)}
+
+/* =============================================================
+   code exhibit
+   ============================================================= */
+.code{
+  margin-top:clamp(22px,3vw,32px); background:var(--recess);
+  border:1px solid var(--line-2); padding:clamp(18px,3vw,30px);
+  font-family:var(--mono); font-size:clamp(11.5px,1.05vw,13.5px); line-height:1.85;
+  overflow-x:auto; color:var(--ink); white-space:pre;
 }
+.code .kw{color:var(--sig-lit)}
+.code .fn{color:#FFD9A0}
+.code .st{color:#9BE0B4}
+
+/* =============================================================
+   colophon
+   ============================================================= */
 .colo-lede{
-  margin-top:14px; max-width:60ch; font-size:clamp(15.5px,1.7vw,18px);
-  color:#AEB5C0; text-wrap:pretty;
+  margin-top:20px; font-size:clamp(19px,2.3vw,27px); line-height:1.4;
+  letter-spacing:-.015em; max-width:34ch; text-wrap:balance; color:var(--ink);
 }
+/* four steps, so two columns — auto-fit gave three and stranded the fourth */
 .colo-grid{
-  margin-top:clamp(26px,3.4vw,38px);
-  display:grid; gap:1px; background:#272C36;
-  border-top:1px solid #272C36; border-bottom:1px solid #272C36;
-  grid-template-columns:1fr;   /* 4 items: 2x2 on desktop, never an orphan cell */
+  display:grid; grid-template-columns:minmax(0,1fr);
+  gap:1px; background:var(--line); margin-top:clamp(32px,5vw,56px);
+  border:1px solid var(--line);
 }
-@media (min-width:700px){ .colo-grid{grid-template-columns:repeat(2,1fr)} }
-.colo-step{background:var(--dark-surface); padding:clamp(18px,2.2vw,24px) clamp(16px,2vw,22px)}
+@media (min-width:800px){ .colo-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+.colo-step{background:var(--void); padding:clamp(22px,3vw,34px)}
 .colo-step h3{
   font-family:var(--mono); font-size:13px; font-weight:700; letter-spacing:.02em;
-  color:#7FA0FF; margin-bottom:9px;
+  color:var(--sig-lit); margin-bottom:12px;
 }
-.colo-step p{color:#A7AEBA; font-size:14.8px; line-height:1.6; text-wrap:pretty}
-.colo-step code{
-  font-family:var(--mono); font-size:.88em; color:#E8EAEE;
-  background:#1C212B; border:1px solid #2E3542; padding:1px 5px; border-radius:3px;
-}
+.colo-step p{color:var(--dim); font-size:15.5px; text-wrap:pretty}
 .colo-close{
-  margin-top:clamp(24px,3vw,32px); max-width:72ch;
-  color:#A7AEBA; font-size:15.4px; text-wrap:pretty;
+  margin-top:clamp(30px,4vw,48px); max-width:70ch; color:var(--dim); text-wrap:pretty;
 }
-.colo-close b{color:#FBFBFC; font-weight:650}
-.colo-close a{color:#9FB8FF; text-decoration:none; border-bottom:1px solid #4B5F9E}
-.colo-close a:hover{background:rgba(127,160,255,.12)}
-.colo-close a:focus-visible{outline:2px solid #7FA0FF; outline-offset:2px}
+.colo-close a{color:var(--sig-lit); text-decoration:none; border-bottom:1px solid var(--line-2)}
+.colo-close a:hover{border-color:var(--sig)}
+.colo-close b{
+  display:block; margin-top:18px; color:var(--ink); font-weight:600;
+  font-size:clamp(17px,1.8vw,21px); line-height:1.45; text-wrap:balance;
+}
 
-/* ---------- footer ---------- */
-footer{
-  border-top:1px solid var(--hair-strong); padding:clamp(20px,3vw,30px) clamp(20px,4vw,52px);
-  display:flex; flex-wrap:wrap; gap:14px 28px; align-items:baseline;
-  font-family:var(--mono); font-size:12.5px; color:var(--graphite);
+/* =============================================================
+   footer
+   ============================================================= */
+footer{border-top:1px solid var(--line)}
+.foot-in{
+  padding-block:clamp(28px,4vw,44px);
+  display:flex; gap:12px 26px; flex-wrap:wrap; align-items:baseline;
+  font-family:var(--mono); font-size:12px; letter-spacing:.08em; color:var(--faint);
 }
-footer a{color:var(--stamp); text-decoration:none; border-bottom:1px solid transparent}
-footer a:hover{border-bottom-color:var(--stamp)}
-footer a:focus-visible{outline:2px solid var(--stamp); outline-offset:2px}
-footer .who{color:var(--ink); font-weight:700}
-
-.skip{position:absolute;left:-9999px}
-.skip:focus{left:16px;top:16px;background:var(--ink);color:var(--sheet);padding:10px 14px;z-index:var(--z-sticky)}
-
-@media (max-width:640px){
-  .step{grid-template-columns:1fr; gap:8px}
-  .idx{padding-top:0}
-  .verdict{grid-template-columns:1fr}
-  .seal{width:84px;height:84px}
-}
-@media (prefers-reduced-motion:reduce){
-  *{animation-duration:.001s!important; transition-duration:.001s!important}
-}
+footer .who{color:var(--ink); font-weight:700; text-transform:uppercase; letter-spacing:.13em}
+footer a{color:var(--dim); text-decoration:none; border-bottom:1px solid var(--line-2)}
+footer a:hover{color:var(--sig-lit); border-color:var(--sig)}
 </style>
 </head>
 <body>
 <a class="skip" href="#procedure">Skip to the verification procedure</a>
 
-<main class="sheet">
-
-  <header class="masthead">
-    <div class="docline">
-      <span class="who">Kuba Opoczka</span>
-      <span>Signature Verification Report</span>
-      <span class="rule"></span>
+<header class="masthead">
+  <div class="rail">
+    <div class="ident">
+      <b>Kuba Opoczka</b>
+      <span>Signature verification instrument</span>
+      <span class="sep"></span>
       <span>RFC&nbsp;6376</span>
     </div>
 
-    <h1>A real signature, verified in your browser.</h1>
+    <h1>Don&rsquo;t trust it. <span class="thin">Break it.</span></h1>
 
     <p class="dek">
-      This page takes a genuine DKIM-signed email and checks its 2048-bit RSA signature
+      This page holds a genuine DKIM-signed email and checks its 2048-bit RSA signature
       from first principles — canonicalisation, SHA-256, modular exponentiation, PKCS#1&nbsp;v1.5
       padding — <b>with no cryptography library on either side</b>. The Python implementation is
-      mine. The JavaScript running here is a second, independent implementation, so the numbers
-      below are computed live rather than replayed.
+      mine. The JavaScript running here is a second, independent implementation, so every number
+      below is computed on your machine right now rather than replayed.
     </p>
-    <p class="dek" style="margin-top:12px">
-      Work through the example, then <a href="#live">paste in one of your own emails</a> — it
-      will fetch the real sender&rsquo;s key from DNS and check their signature too.
+    <p class="dek">
+      Change one character of the message and watch the proof collapse. Then
+      <a href="#live">paste in one of your own emails</a> — it will fetch the real
+      sender&rsquo;s key from DNS and check their signature too.
     </p>
 
     <dl class="spec">
@@ -488,15 +497,18 @@ footer .who{color:var(--ink); font-weight:700}
       <div><dt>Canonicalisation</dt><dd>relaxed/relaxed</dd></div>
       <div><dt>Public exponent</dt><dd>65537</dd></div>
     </dl>
-  </header>
+  </div>
+</header>
 
-  <section class="proc" id="procedure">
+<hr class="rule">
 
-    <div class="proc-head">
-      <b>Verification procedure</b>
-      <span>3 stages</span>
+<section class="sec" id="procedure">
+  <div class="rail">
+
+    <div class="runline">
+      <span>Verification procedure</span>
       <span class="fill"></span>
-      <span class="runflag"><span class="led"></span>running in this browser</span>
+      <span class="on"><span class="led"></span>executing in this browser</span>
     </div>
 
     <!-- STEP 1 -->
@@ -511,14 +523,14 @@ footer .who{color:var(--ink); font-weight:700}
           signing, this hash stops matching.
         </p>
 
-        <div class="block">
-          <div class="block-label">
+        <div class="well">
+          <div class="well-label">
             <span>Message body — editable</span>
             <span class="hint">change anything and the proof collapses</span>
           </div>
           <textarea class="data" id="body" spellcheck="false" rows="4" aria-label="Message body, editable"></textarea>
           <div class="controls">
-            <button class="ghost" id="tamper" type="button">Flip one byte</button>
+            <button id="tamper" type="button">Flip one byte</button>
             <button class="ghost" id="reset" type="button">Restore original</button>
           </div>
         </div>
@@ -534,7 +546,7 @@ footer .who{color:var(--ink); font-weight:700}
           </div>
         </div>
 
-        <div class="block-label" style="margin-top:14px">
+        <div class="flag-wrap">
           <span class="flag" id="flag1" data-state="pending"><span class="dot"></span><span>checking</span></span>
         </div>
       </div>
@@ -552,8 +564,8 @@ footer .who{color:var(--ink); font-weight:700}
           emptied — you cannot sign the signature. This exact byte string is what the RSA signature
           covers.
         </p>
-        <div class="block">
-          <div class="block-label"><span>Reconstructed signed data — 324 bytes</span></div>
+        <div class="well">
+          <div class="well-label"><span>Reconstructed signed data — 324 bytes</span></div>
           <div class="data" id="signed"></div>
         </div>
         <div class="cmp">
@@ -572,21 +584,28 @@ footer .who{color:var(--ink); font-weight:700}
         <h2>Recover the padding block with <span class="mono">pow(s, e, n)</span></h2>
         <p>
           RSA verification is one modular exponentiation: raise the signature to the public
-          exponent, modulo the public key. What comes back should be a PKCS#1&nbsp;v1.5 block —
-          <code>00 01</code>, a run of <code>FF</code> padding, <code>00</code>, a DER
-          <em>DigestInfo</em> header naming the hash algorithm, and finally the digest itself.
+          exponent, modulo the public key. Nothing here is a comparison against a stored answer —
+          the digest is <em>recovered</em> out of the signature, then matched against the one
+          computed in step 02.
         </p>
         <p>
-          Nothing here is a comparison against a stored answer. The digest is <em>recovered</em>
-          from the signature, then matched against what we computed in step 02.
+          What comes back has a shape. Two marker bytes, a long wall of <code>FF</code> padding,
+          a <code>00</code> separator, a DER header naming the hash algorithm, and finally the
+          digest. That shape is drawn below from the actual recovered bytes.
         </p>
 
-        <div class="block">
-          <div class="block-label"><span>Recovered block <span id="emlen"></span></span></div>
-          <div class="hex" id="hex" aria-label="Recovered PKCS#1 v1.5 padding block"></div>
+        <div class="blockmap">
+          <div class="well-label">
+            <span>Recovered block <span id="emlen"></span></span>
+            <span class="hint">structure derived from the bytes, not assumed</span>
+          </div>
+          <div class="map-bar" id="map-bar" aria-hidden="true"></div>
+          <div class="map-scale" id="map-scale" aria-hidden="true"></div>
+          <div class="hexgrid" id="hex" role="img" aria-label="Recovered PKCS#1 v1.5 padding block, 256 bytes"></div>
           <div class="legend">
-            <span><i style="background:var(--stamp)"></i>structure &amp; recovered digest</span>
-            <span><i style="background:var(--hair-strong)"></i>FF padding</span>
+            <span><i style="background:var(--sig)"></i>marker &amp; recovered digest</span>
+            <span><i style="background:#2C3E7A"></i>DER DigestInfo</span>
+            <span><i style="background:#171C25"></i>FF padding</span>
           </div>
         </div>
 
@@ -601,15 +620,19 @@ footer .who{color:var(--ink); font-weight:700}
           </div>
         </div>
 
-        <div class="block-label" style="margin-top:14px">
+        <div class="flag-wrap">
           <span class="flag" id="flag3" data-state="pending"><span class="dot"></span><span>checking</span></span>
         </div>
         <p class="timing" id="timing"></p>
       </div>
     </article>
 
-  <!-- VERDICT — the instrument's output -->
-  <section class="verdict" id="verdict" data-state="pending" aria-live="polite">
+  </div>
+</section>
+
+<!-- VERDICT — the instrument's output -->
+<section class="verdict" id="verdict" data-state="pending" aria-live="polite">
+  <div class="rail verdict-in">
     <div>
       <h2 id="verdict-title">Verifying&hellip;</h2>
       <p id="verdict-note">Running SHA-256 and a 2048-bit modular exponentiation.</p>
@@ -619,30 +642,29 @@ footer .who{color:var(--ink); font-weight:700}
       <circle class="ring" cx="60" cy="60" r="50" stroke-width="4"/>
       <path class="glyph" id="glyph" d="M38 61.5 l14 14 L84 43"/>
     </svg>
-  </section>
-  </section><!-- /.proc -->
+  </div>
+</section>
 
-  <!-- LIVE TOOL -->
-  <section class="live" id="live">
-    <div class="live-head">
-      <h2>Now verify one of your own</h2>
-      <p>
-        Open any email &mdash; in Gmail that&rsquo;s the <b>More</b> menu &rarr;
-        <b>Show original</b>; in Outlook, <b>View source</b> &mdash; copy the whole thing, and
-        paste it below. The same code that ran above will fetch the sender&rsquo;s public key
-        from DNS and check their signature.
-      </p>
-      <p class="live-privacy">
-        Your email never leaves this page — parsing, hashing and the RSA operation all happen
-        in your browser. The one thing that goes out is a DNS-over-HTTPS lookup for the
-        <em>signing domain and selector</em> (never your address or the message), because the
-        public key has to come from somewhere. That request goes to Cloudflare, then Google as
-        a fallback.
-      </p>
-    </div>
+<!-- PASTE TOOL — id stays #live for the masthead anchor -->
+<section class="sec paste" id="live">
+  <div class="rail">
+    <h2 class="sec-title">Now verify one of your own</h2>
+    <p class="sec-lede">
+      Open any email &mdash; in Gmail that&rsquo;s the <b>More</b> menu &rarr;
+      <b>Show original</b>; in Outlook, <b>View source</b> &mdash; copy the whole thing and
+      paste it below. The same code that ran above will fetch the sender&rsquo;s public key
+      from DNS and check their signature.
+    </p>
+    <p class="paste-privacy">
+      Your email never leaves this page — parsing, hashing and the RSA operation all happen
+      in your browser. The one thing that goes out is a DNS-over-HTTPS lookup for the
+      <em>signing domain and selector</em> (never your address or the message), because the
+      public key has to come from somewhere. That request goes to Cloudflare, then Google as
+      a fallback.
+    </p>
 
-    <div class="block">
-      <div class="block-label">
+    <div class="well">
+      <div class="well-label">
         <span>Raw message source</span>
         <span class="hint">headers and body, exactly as copied</span>
       </div>
@@ -652,12 +674,12 @@ footer .who{color:var(--ink); font-weight:700}
       <div class="controls">
         <button id="run-live" type="button">Verify this message</button>
         <button class="ghost" id="clear-live" type="button">Clear</button>
-        <span class="hint" id="live-status"></span>
+        <span class="hint mono" id="live-status"></span>
       </div>
     </div>
 
     <div id="live-out" hidden>
-      <dl class="spec live-spec">
+      <dl class="spec">
         <div><dt>Signing domain</dt><dd id="lv-domain">—</dd></div>
         <div><dt>Selector</dt><dd id="lv-selector">—</dd></div>
         <div><dt>Algorithm</dt><dd id="lv-algo">—</dd></div>
@@ -666,30 +688,36 @@ footer .who{color:var(--ink); font-weight:700}
         <div><dt>Signed headers</dt><dd id="lv-h">—</dd></div>
       </dl>
 
-      <div class="live-flags">
+      <div class="flags-row">
         <span class="flag" id="lv-flag-body" data-state="pending"><span class="dot"></span><span>body hash</span></span>
         <span class="flag" id="lv-flag-key" data-state="pending"><span class="dot"></span><span>public key</span></span>
         <span class="flag" id="lv-flag-sig" data-state="pending"><span class="dot"></span><span>signature</span></span>
       </div>
 
-      <div class="verdict live-verdict" id="lv-verdict" data-state="pending" aria-live="polite">
-        <div>
-          <h2 id="lv-title">Ready</h2>
-          <p id="lv-note">Paste a message and press verify.</p>
+      <div class="verdict" id="lv-verdict" data-state="pending" aria-live="polite" style="margin-top:clamp(24px,4vw,40px)">
+        <div class="verdict-in" style="padding-inline:clamp(20px,4vw,40px)">
+          <div>
+            <h2 id="lv-title">Ready</h2>
+            <p id="lv-note">Paste a message and press verify.</p>
+          </div>
+          <svg class="seal" id="lv-seal" viewBox="0 0 120 120" aria-hidden="true">
+            <circle class="ring" cx="60" cy="60" r="56" stroke-width="1.5"/>
+            <circle class="ring" cx="60" cy="60" r="50" stroke-width="4"/>
+            <path class="glyph" id="lv-glyph" d="M38 61.5 l14 14 L84 43"/>
+          </svg>
         </div>
-        <svg class="seal" id="lv-seal" viewBox="0 0 120 120" aria-hidden="true">
-          <circle class="ring" cx="60" cy="60" r="56" stroke-width="1.5"/>
-          <circle class="ring" cx="60" cy="60" r="50" stroke-width="4"/>
-          <path class="glyph" id="lv-glyph" d="M38 61.5 l14 14 L84 43"/>
-        </svg>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- CODE -->
-  <section class="exhibit">
-    <h2>The whole verification is eight lines</h2>
-    <p>
+<hr class="rule">
+
+<!-- CODE -->
+<section class="sec">
+  <div class="rail">
+    <h2 class="sec-title">The whole verification is eight lines</h2>
+    <p class="sec-lede">
       This is the function, unedited, from <span class="mono">analyzer/dkim.py</span>. No imports
       beyond the standard library — the RSA operation is Python&rsquo;s built-in
       <span class="mono">pow()</span> with three arguments, and the padding check is a byte
@@ -703,16 +731,20 @@ footer .who{color:var(--ink); font-weight:700}
     t = _DIGEST_PREFIX[hashname] + digest
     expected = b<span class="st">"\x00\x01"</span> + b<span class="st">"\xff"</span> * (k - len(t) - <span class="st">3</span>) + b<span class="st">"\x00"</span> + t
     <span class="kw">return</span> em == expected</pre>
-    <p style="margin-top:16px">
+    <p class="sec-lede" style="margin-top:20px">
       It sits inside DAEMON, an email threat-intelligence console: 28 modules, 130 passing tests,
       standard library at the core. The verifier was validated non-circularly — signed by a
       third-party tool, verified by this code, then re-checked against a deliberately tampered copy.
     </p>
-  </section>
+  </div>
+</section>
 
-  <!-- COLOPHON -->
-  <section class="colophon" id="how">
-    <h2>How this was built, honestly</h2>
+<hr class="rule">
+
+<!-- COLOPHON -->
+<section class="sec" id="how">
+  <div class="rail">
+    <h2 class="sec-title">How this was built, honestly</h2>
     <p class="colo-lede">
       An AI wrote most of the code on this page. I think you should know that, and I think
       it matters less than what happened next.
@@ -770,18 +802,19 @@ footer .who{color:var(--ink); font-weight:700}
       <b>Anyone can prompt an agent into working code. The job is building the thing that
       catches it when it quietly lies to you.</b>
     </p>
-  </section>
+  </div>
+</section>
 
-  <footer>
+<footer>
+  <div class="rail foot-in">
     <span class="who">Kuba Opoczka</span>
     <span>Software &amp; security tooling · Co. Wicklow, Ireland</span>
     <a href="https://www.linkedin.com/in/kubaopoczka" rel="noopener">LinkedIn</a>
     <a href="https://github.com/SmellyBricc" rel="noopener">GitHub</a>
     <a href="cv/">Auditable CV</a>
     <a href="notes/silent/">Three bugs an AI wrote</a>
-  </footer>
-
-</main>
+  </div>
+</footer>
 
 <script>
 "use strict";
@@ -899,19 +932,73 @@ function setFlag(el, ok, okText, badText){
   el.lastElementChild.textContent = ok ? okText : badText;
 }
 
-function hexdump(bytes, digestStart){
-  const rows = [];
-  for (let i = 0; i < bytes.length; i += 16){
-    const chunk = [...bytes.slice(i, i+16)];
-    const cells = chunk.map((v, j) => {
-      const abs = i + j;
-      const h = v.toString(16).padStart(2,"0").toUpperCase();
-      const cls = abs >= digestStart ? "digest" : (abs < 2 ? "marker" : (v === 0xff ? "pad" : "marker"));
-      return `<span class="cell ${cls}" data-h="${h}">${h}</span>`;
-    });
-    rows.push(`<span class="ln"><span class="off">${i.toString(16).padStart(4,"0")}  </span>${cells.join(" ")}</span>`);
+/* Walk the recovered block and report where each PKCS#1 v1.5 region actually
+   starts and ends. Nothing here is assumed from the key size: the padding run
+   is measured, and if the block is not a well-formed structure the regions
+   come back degenerate and the map shows that honestly. */
+function mapRegions(em, digestStart){
+  const k = em.length;
+  let i = 2;
+  while (i < digestStart && em[i] === 0xff) i++;
+  const padLen = i - 2;
+  const hasSep = em[i] === 0x00 ? 1 : 0;
+  const derStart = i + hasSep;
+  /* not `derLen` — that name is the DER length parser further down */
+  const derBytes = Math.max(0, digestStart - derStart);
+  return {
+    marker: Math.min(2, k), pad: padLen, sep: hasSep,
+    der: derBytes, digest: k - digestStart,
+    derStart, digestStart, wellFormed: em[0] === 0x00 && em[1] === 0x01 && padLen > 0 && hasSep === 1
+  };
+}
+
+function hexdump(bytes, r){
+  let out = "";
+  for (let i = 0; i < bytes.length; i++){
+    const v = bytes[i];
+    const h = v.toString(16).padStart(2,"0").toUpperCase();
+    const cls =
+      i >= r.digestStart ? "digest" :
+      i >= r.derStart    ? "der"    :
+      i < 2              ? "marker" :
+      v === 0xff         ? "pad"    : "marker";
+    out += `<span class="cell ${cls}" data-h="${h}">${h}</span>`;
   }
-  return rows.join("");
+  return out;
+}
+
+/* The proportional structure map. Widths are the measured byte counts, so the
+   wall of FF padding is wide because it really is 203 bytes long. */
+function renderMap(r){
+  const segs = [
+    ["marker", r.marker, "00 01"],
+    ["pad",    r.pad,    r.pad + " bytes of FF padding"],
+    ["sep",    r.sep,    "00"],
+    ["der",    r.der,    "DER"],
+    ["digest", r.digest, r.digest + "-byte digest"]
+  ].filter(s => s[1] > 0);
+
+  const bar = $("map-bar");
+  bar.innerHTML = segs
+    .map(([name, n], i) => `<span class="seg seg-${name}" style="--n:${n};--i:${i}"></span>`).join("");
+
+  /* Replay the build on every run, when motion is welcome and the tab is
+     actually visible. fill:'none' means the bar's resting state is the
+     finished one, so if this never runs the reader still sees the block. */
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches
+      && !document.hidden && bar.animate){
+    bar.animate(
+      [{clipPath:"inset(0 100% 0 0)"}, {clipPath:"inset(0 0 0 0)"}],
+      {duration:620, easing:"cubic-bezier(.16,1,.3,1)", fill:"none"}
+    );
+  }
+
+  $("map-scale").innerHTML = segs
+    .map(([name, n, label]) => {
+      const lit  = (name === "digest" || name === "marker") ? " lit" : "";
+      const drop = n < 8 ? " drop" : "";
+      return `<span class="${lit}${drop}" style="--n:${n}">${label}</span>`;
+    }).join("");
 }
 
 /* Bytes settle into place instead of appearing all at once. The values are
@@ -948,7 +1035,7 @@ function run(){
 
   $("bh-claimed").textContent = BH_CLAIMED;
   $("bh-computed").textContent = bhComputed;
-  $("bh-computed").style.color = bodyOk ? "var(--stamp)" : "var(--fail)";
+  $("bh-computed").style.color = bodyOk ? "var(--sig-lit)" : "var(--fail-lit)";
   setFlag($("flag1"), bodyOk, "body hash matches", "body hash mismatch");
 
   /* ---- step 2: signed-header digest ---- */
@@ -973,8 +1060,10 @@ function run(){
   expected.set(t, k - t.length);
 
   const digestStart = k - 32;
+  const regions = mapRegions(em, digestStart);
   $("emlen").textContent = `— ${k} bytes`;
-  $("hex").innerHTML = hexdump(em, digestStart);
+  renderMap(regions);
+  $("hex").innerHTML = hexdump(em, regions);
   resolveHex($("hex"));
   $("timing").innerHTML =
     `${k * 8}-bit modular exponentiation completed in <b>${rsaMs.toFixed(2)} ms</b> ` +
@@ -985,8 +1074,14 @@ function run(){
   $("em-expect").textContent = hex(digest);
 
   const sigOk = hex(em) === hex(expected);
-  $("em-digest").style.color = sigOk ? "var(--stamp)" : "var(--fail)";
+  $("em-digest").style.color = sigOk ? "var(--sig-lit)" : "var(--fail-lit)";
   setFlag($("flag3"), sigOk, "signature valid", "signature invalid");
+
+  /* The map reflects the RECOVERED BLOCK only — not the overall verdict.
+     Editing the body does not touch the header signature, so the block stays
+     valid and the map stays blue while step 01 fails. That is the truth and
+     it is what the verdict text says; do not wire this to allOk. */
+  document.querySelector(".blockmap").dataset.map = sigOk ? "ok" : "bad";
 
   $("spec-bits").textContent = `${N.toString(2).length}-bit`;
 
