@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Signature Verification Report — Kuba Opoczka</title>
+<title>Signature Verification Report | Kuba Opoczka</title>
 <meta name="description" content="A real 2048-bit RSA/DKIM signature, verified in your browser with no crypto library. Change one character of the message and watch the proof collapse.">
 <link rel="canonical" href="https://smellybricc.github.io/verify/">
 <meta property="og:type" content="website">
@@ -28,7 +28,7 @@
 }
 
 /* =============================================================
-   verify — an instrument, not a document and not a terminal.
+   verify - an instrument, not a document and not a terminal.
    One dark surface. --ink is TEXT ONLY, never a background.
    No nested cards: sections are separated by rules and space.
    ============================================================= */
@@ -38,13 +38,13 @@
   --recess-2:#11151D;
 
   --ink:#F2F5F9;           /* TEXT ONLY */
-  --dim:#A8B1C0;           /* secondary text — contrast-checked on --void */
+  --dim:#A8B1C0;           /* secondary text - contrast-checked on --void */
   --faint:#78818F;         /* tertiary; large or mono only */
 
   --line:#1B212B;
   --line-2:#2B3341;
 
-  --sig:#3D6BFF;           /* identity blue — matches banner + avatar */
+  --sig:#3D6BFF;           /* identity blue - matches banner + avatar */
   --sig-deep:#3763EE;      /* only where WHITE sits on top: white/#3D6BFF is
                               4.43:1 and 12px bold does not count as large text,
                               so buttons use this (5.02:1) instead */
@@ -105,9 +105,17 @@ body{
 .ident b{color:var(--ink); font-weight:700; letter-spacing:.1em}
 .ident .sep{flex:1 1 30px; height:1px; background:var(--line-2); min-width:20px}
 
+.mast-grid{
+  display:grid; grid-template-columns:minmax(0,1.18fr) minmax(300px,.82fr);
+  gap:clamp(36px,6vw,84px); align-items:center;
+}
+@media (max-width:860px){
+  .mast-grid{grid-template-columns:1fr}
+}
+
 h1{
-  font-size:clamp(40px,7.6vw,92px); line-height:.98; letter-spacing:-.035em;
-  font-weight:700; text-wrap:balance; max-width:15ch;
+  font-size:clamp(40px,6.8vw,82px); line-height:.98; letter-spacing:-.035em;
+  font-weight:700; text-wrap:balance; max-width:13ch;
 }
 h1 .thin{font-weight:300; color:var(--dim)}
 
@@ -120,7 +128,39 @@ h1 .thin{font-weight:300; color:var(--dim)}
 .dek a{color:var(--sig-lit); text-decoration:none; border-bottom:1.5px solid var(--sig)}
 .dek a:hover{background:var(--sig-wash)}
 
-/* spec strip — a row of readings, no boxes */
+.hero-actions{display:flex; flex-wrap:wrap; gap:12px; margin-top:clamp(24px,3vw,34px)}
+.hero-action{
+  display:inline-flex; align-items:center; min-height:44px; padding:11px 18px;
+  border:1px solid var(--sig-deep); background:var(--sig-deep); color:#fff;
+  font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:.1em;
+  text-transform:uppercase; text-decoration:none;
+  transition:transform .18s var(--out), background .18s var(--out);
+}
+.hero-action:hover{background:#2E55D0; transform:translateY(-1px)}
+.hero-action:active{transform:translateY(0)}
+.hero-action.secondary{background:transparent; color:var(--ink); border-color:var(--line-2)}
+.hero-action.secondary:hover{border-color:var(--sig); color:var(--sig-lit); background:var(--sig-wash)}
+
+.sig-specimen{
+  min-width:0; border-block:1px solid var(--line-2); padding:18px 0;
+  background-image:radial-gradient(circle,rgba(61,107,255,.14) 0 1px,transparent 1.3px);
+  background-size:9px 9px;
+}
+.sig-specimen-head,.sig-specimen-foot{
+  display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap;
+  font-family:var(--mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--faint); background:rgba(6,7,10,.9); padding:8px 10px;
+}
+.sig-specimen-head b{color:var(--sig-lit)}
+.sig-ascii{
+  margin:14px 0; padding:16px 12px; overflow:hidden;
+  background:rgba(6,7,10,.82); color:var(--sig-lit);
+  font-family:var(--mono); font-size:clamp(9px,1vw,12px); line-height:1.28;
+  letter-spacing:.16em; white-space:pre; user-select:none;
+}
+.sig-specimen-foot{letter-spacing:.04em; text-transform:none}
+
+/* spec strip - a row of readings, no boxes */
 .spec{
   display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
   gap:1px; background:var(--line); border-block:1px solid var(--line);
@@ -147,7 +187,7 @@ h1 .thin{font-weight:300; color:var(--dim)}
 }
 .sec-lede{margin-top:18px; max-width:60ch; color:var(--dim); text-wrap:pretty}
 
-/* running indicator — one, at the top of the procedure. not a per-section eyebrow */
+/* running indicator - one, at the top of the procedure. not a per-section eyebrow */
 .runline{
   display:flex; align-items:center; gap:12px; flex-wrap:wrap;
   font-family:var(--mono); font-size:11.5px; letter-spacing:.16em;
@@ -163,7 +203,7 @@ h1 .thin{font-weight:300; color:var(--dim)}
 @media (prefers-reduced-motion:reduce){ .led{animation:none} }
 
 /* =============================================================
-   steps — a real ordered sequence, so the numerals earn their place.
+   steps - a real ordered sequence, so the numerals earn their place.
    They are set large enough to be structure, not decoration.
    ============================================================= */
 .step{
@@ -256,7 +296,7 @@ button.ghost:hover{border-color:var(--sig); color:var(--sig-lit); background:var
 .timing b{color:var(--sig-lit); font-weight:700}
 
 /* =============================================================
-   THE SIGNATURE DEVICE — the recovered block, made visible.
+   THE SIGNATURE DEVICE - the recovered block, made visible.
    256 real bytes. The PKCS#1 v1.5 structure is the picture:
    00 01 · a wall of FF padding · 00 · DER header · the digest.
    Proportions are computed from the actual bytes, never faked.
@@ -289,7 +329,7 @@ button.ghost:hover{border-color:var(--sig); color:var(--sig-lit); background:var
   box-shadow:0 0 34px var(--sig-glow), inset 0 0 0 1px rgba(255,255,255,.16);
 }
 /* when the proof collapses, the recovered block is no longer a valid
-   PKCS#1 structure — the map says so in the failure colour */
+   PKCS#1 structure - the map says so in the failure colour */
 [data-map="bad"] .seg-marker{background:var(--fail)}
 [data-map="bad"] .seg-digest{background:var(--fail); box-shadow:0 0 34px rgba(255,79,46,.55), inset 0 0 0 1px rgba(255,255,255,.16)}
 [data-map="bad"] .seg-der{background:#7A2F22}
@@ -306,7 +346,7 @@ button.ghost:hover{border-color:var(--sig); color:var(--sig-lit); background:var
 }
 .map-scale span.lit{color:var(--sig-lit)}
 [data-map="bad"] .map-scale span.lit{color:var(--fail-lit)}
-/* A 1–2 byte segment is ~0.5% of the bar; it can never carry a label without
+/* A 1-2 byte segment is ~0.5% of the bar; it can never carry a label without
    colliding with its neighbour. It keeps its flex space so the remaining
    labels stay aligned to their segments, but the text is hidden. */
 .map-scale span.drop{visibility:hidden}
@@ -331,7 +371,7 @@ button.ghost:hover{border-color:var(--sig); color:var(--sig-lit); background:var
   transition:color .3s var(--out), background .3s var(--out);
 }
 .cell.marker{color:var(--sig-lit); background:var(--recess-2)}
-/* the FF bytes are real content, not chrome — recessive but readable (4.91:1) */
+/* the FF bytes are real content, not chrome - recessive but readable (4.91:1) */
 .cell.pad{color:var(--faint)}
 .cell.der{color:#A8BEFF; background:rgba(44,62,122,.30)}
 .cell.digest{color:#DCE6FF; background:rgba(61,107,255,.22); font-weight:700}
@@ -347,7 +387,7 @@ button.ghost:hover{border-color:var(--sig); color:var(--sig-lit); background:var
 .legend i{display:inline-block; width:13px; height:13px; margin-right:8px; vertical-align:-2px}
 
 /* =============================================================
-   verdict — the instrument's output. full-bleed, unmissable.
+   verdict - the instrument's output. full-bleed, unmissable.
    ============================================================= */
 .verdict{
   border-block:1px solid var(--line-2);
@@ -395,7 +435,7 @@ button.ghost:hover{border-color:var(--sig); color:var(--sig-lit); background:var
 }
 
 /* =============================================================
-   paste tool  (class .paste — NOT .live; .live was the old name
+   paste tool  (class .paste - NOT .live; .live was the old name
    and reusing it caused a white-background bug)
    ============================================================= */
 .paste-privacy{
@@ -425,7 +465,7 @@ button.ghost:hover{border-color:var(--sig); color:var(--sig-lit); background:var
   margin-top:20px; font-size:clamp(19px,2.3vw,27px); line-height:1.4;
   letter-spacing:-.015em; max-width:34ch; text-wrap:balance; color:var(--ink);
 }
-/* four steps, so two columns — auto-fit gave three and stranded the fourth */
+/* four steps, so two columns - auto-fit gave three and stranded the fourth */
 .colo-grid{
   display:grid; grid-template-columns:minmax(0,1fr);
   gap:1px; background:var(--line); margin-top:clamp(32px,5vw,56px);
@@ -474,20 +514,32 @@ footer a:hover{color:var(--sig-lit); border-color:var(--sig)}
       <span>RFC&nbsp;6376</span>
     </div>
 
-    <h1>Don&rsquo;t trust it. <span class="thin">Break it.</span></h1>
+    <div class="mast-grid">
+      <div>
+        <h1>Don&rsquo;t trust it. <span class="thin">Break it.</span></h1>
 
-    <p class="dek">
-      This page holds a genuine DKIM-signed email and checks its 2048-bit RSA signature
-      from first principles — canonicalisation, SHA-256, modular exponentiation, PKCS#1&nbsp;v1.5
-      padding — <b>with no cryptography library on either side</b>. The Python implementation is
-      mine. The JavaScript running here is a second, independent implementation, so every number
-      below is computed on your machine right now rather than replayed.
-    </p>
-    <p class="dek">
-      Change one character of the message and watch the proof collapse. Then
-      <a href="#live">paste in one of your own emails</a> — it will fetch the real
-      sender&rsquo;s key from DNS and check their signature too.
-    </p>
+        <p class="dek">
+          A genuine DKIM-signed email. Two independent implementations. No cryptography
+          library. Change one byte and watch the proof fail.
+        </p>
+        <div class="hero-actions">
+          <a class="hero-action" href="#message-body">Break the proof</a>
+          <a class="hero-action secondary" href="#live">Verify your email</a>
+        </div>
+      </div>
+
+      <aside class="sig-specimen" aria-label="The real 256-byte RSA signature rendered as an ASCII field">
+        <div class="sig-specimen-head">
+          <b>Real signature bytes</b>
+          <span>RSA / 2048-bit</span>
+        </div>
+        <pre class="sig-ascii" id="hero-ascii" aria-hidden="true">rendering 256 signed bytes...</pre>
+        <div class="sig-specimen-foot">
+          <span>input: third-party-signed fixture</span>
+          <span id="hero-byte-count">256 bytes</span>
+        </div>
+      </aside>
+    </div>
 
     <dl class="spec">
       <div><dt>Signing domain</dt><dd>example.com</dd></div>
@@ -523,9 +575,9 @@ footer a:hover{color:var(--sig-lit); border-color:var(--sig)}
           signing, this hash stops matching.
         </p>
 
-        <div class="well">
+        <div class="well" id="message-body">
           <div class="well-label">
-            <span>Message body — editable</span>
+            <span>Message body / editable</span>
             <span class="hint">change anything and the proof collapses</span>
           </div>
           <textarea class="data" id="body" spellcheck="false" rows="4" aria-label="Message body, editable"></textarea>
@@ -561,11 +613,11 @@ footer a:hover{color:var(--sig-lit); border-color:var(--sig)}
           The <code>h=</code> tag lists which headers were signed, in order. Each is canonicalised
           (name lower-cased, folding removed, whitespace collapsed), then the
           <code>DKIM-Signature</code> header itself is appended with its own <code>b=</code> value
-          emptied — you cannot sign the signature. This exact byte string is what the RSA signature
+          emptied because you cannot sign the signature. This exact byte string is what the RSA signature
           covers.
         </p>
         <div class="well">
-          <div class="well-label"><span>Reconstructed signed data — 324 bytes</span></div>
+          <div class="well-label"><span>Reconstructed signed data / 324 bytes</span></div>
           <div class="data" id="signed"></div>
         </div>
         <div class="cmp">
@@ -584,7 +636,7 @@ footer a:hover{color:var(--sig-lit); border-color:var(--sig)}
         <h2>Recover the padding block with <span class="mono">pow(s, e, n)</span></h2>
         <p>
           RSA verification is one modular exponentiation: raise the signature to the public
-          exponent, modulo the public key. Nothing here is a comparison against a stored answer —
+          exponent, modulo the public key. Nothing here is a comparison against a stored answer:
           the digest is <em>recovered</em> out of the signature, then matched against the one
           computed in step 02.
         </p>
@@ -630,7 +682,7 @@ footer a:hover{color:var(--sig-lit); border-color:var(--sig)}
   </div>
 </section>
 
-<!-- VERDICT — the instrument's output -->
+<!-- VERDICT - the instrument's output -->
 <section class="verdict" id="verdict" data-state="pending" aria-live="polite">
   <div class="rail verdict-in">
     <div>
@@ -645,18 +697,18 @@ footer a:hover{color:var(--sig-lit); border-color:var(--sig)}
   </div>
 </section>
 
-<!-- PASTE TOOL — id stays #live for the masthead anchor -->
+<!-- PASTE TOOL - id stays #live for the masthead anchor -->
 <section class="sec paste" id="live">
   <div class="rail">
     <h2 class="sec-title">Now verify one of your own</h2>
     <p class="sec-lede">
-      Open any email &mdash; in Gmail that&rsquo;s the <b>More</b> menu &rarr;
-      <b>Show original</b>; in Outlook, <b>View source</b> &mdash; copy the whole thing and
+      Open any email. In Gmail that&rsquo;s the <b>More</b> menu &rarr;
+      <b>Show original</b>; in Outlook, <b>View source</b>. Copy the whole thing and
       paste it below. The same code that ran above will fetch the sender&rsquo;s public key
       from DNS and check their signature.
     </p>
     <p class="paste-privacy">
-      Your email never leaves this page — parsing, hashing and the RSA operation all happen
+      Your email never leaves this page. Parsing, hashing and the RSA operation all happen
       in your browser. The one thing that goes out is a DNS-over-HTTPS lookup for the
       <em>signing domain and selector</em> (never your address or the message), because the
       public key has to come from somewhere. That request goes to Cloudflare, then Google as
@@ -669,7 +721,7 @@ footer a:hover{color:var(--sig-lit); border-color:var(--sig)}
         <span class="hint">headers and body, exactly as copied</span>
       </div>
       <textarea class="data" id="raw" spellcheck="false" rows="7"
-        placeholder="Paste the full raw email here — it must still include its DKIM-Signature header."
+        placeholder="Paste the full raw email here. It must still include its DKIM-Signature header."
         aria-label="Raw email source to verify"></textarea>
       <div class="controls">
         <button id="run-live" type="button">Verify this message</button>
@@ -680,12 +732,12 @@ footer a:hover{color:var(--sig-lit); border-color:var(--sig)}
 
     <div id="live-out" hidden>
       <dl class="spec">
-        <div><dt>Signing domain</dt><dd id="lv-domain">—</dd></div>
-        <div><dt>Selector</dt><dd id="lv-selector">—</dd></div>
-        <div><dt>Algorithm</dt><dd id="lv-algo">—</dd></div>
-        <div><dt>Key size</dt><dd id="lv-bits">—</dd></div>
-        <div><dt>Canonicalisation</dt><dd id="lv-canon">—</dd></div>
-        <div><dt>Signed headers</dt><dd id="lv-h">—</dd></div>
+        <div><dt>Signing domain</dt><dd id="lv-domain">not run</dd></div>
+        <div><dt>Selector</dt><dd id="lv-selector">not run</dd></div>
+        <div><dt>Algorithm</dt><dd id="lv-algo">not run</dd></div>
+        <div><dt>Key size</dt><dd id="lv-bits">not run</dd></div>
+        <div><dt>Canonicalisation</dt><dd id="lv-canon">not run</dd></div>
+        <div><dt>Signed headers</dt><dd id="lv-h">not run</dd></div>
       </dl>
 
       <div class="flags-row">
@@ -719,7 +771,7 @@ footer a:hover{color:var(--sig-lit); border-color:var(--sig)}
     <h2 class="sec-title">The whole verification is eight lines</h2>
     <p class="sec-lede">
       This is the function, unedited, from <span class="mono">analyzer/dkim.py</span>. No imports
-      beyond the standard library — the RSA operation is Python&rsquo;s built-in
+      beyond the standard library; the RSA operation is Python&rsquo;s built-in
       <span class="mono">pow()</span> with three arguments, and the padding check is a byte
       comparison against a block we rebuild ourselves.
     </p>
@@ -733,7 +785,7 @@ footer a:hover{color:var(--sig-lit); border-color:var(--sig)}
     <span class="kw">return</span> em == expected</pre>
     <p class="sec-lede" style="margin-top:20px">
       It sits inside DAEMON, an email threat-intelligence console: 28 modules, 130 passing tests,
-      standard library at the core. The verifier was validated non-circularly — signed by a
+      standard library at the core. The verifier was validated non-circularly: signed by a
       third-party tool, verified by this code, then re-checked against a deliberately tampered copy.
     </p>
   </div>
@@ -754,7 +806,7 @@ footer a:hover{color:var(--sig-lit); border-color:var(--sig)}
       <div class="colo-step">
         <h3>I decided what it had to do</h3>
         <p>
-          Not &ldquo;build me a DKIM verifier&rdquo; — a specification. No cryptography library.
+          Not &ldquo;build me a DKIM verifier&rdquo;. I wrote a specification. No cryptography library.
           Must recover the padding block rather than compare against a stored answer. Must fail
           in a way that distinguishes a tampered body from a bad signature, because those are
           different problems. The constraints are the design work.
@@ -777,7 +829,7 @@ footer a:hover{color:var(--sig-lit); border-color:var(--sig)}
           specification. I ran them against each other on the cases most likely to break:
           folded headers, repeated headers, tabs and trailing whitespace, a signed header that
           is missing, an empty body. Seven cases, byte-identical output. Then the key parser
-          against two real published keys — 2048-bit and 1024-bit — same modulus, same exponent.
+          against two real published keys (2048-bit and 1024-bit): same modulus, same exponent.
         </p>
       </div>
 
@@ -795,7 +847,7 @@ footer a:hover{color:var(--sig-lit); border-color:var(--sig)}
       The same logic runs over my CV: <a href="cv/">every claim I make is either checked live
       against GitHub and npm, open to inspection, or labelled as unverifiable</a>.
       That is the whole method, and it is not really about cryptography. On a browser extension
-      I built the same way, a review pass found three bugs I had already shipped — a global
+      I built the same way, a review pass found three bugs I had already shipped: a global
       overwritten instead of chained, a tree-walker miscounting its own depth, a licence check
       calling the wrong endpoint. None of them crashed. All of them failed silently and looked
       fine.
@@ -820,7 +872,7 @@ footer a:hover{color:var(--sig-lit); border-color:var(--sig)}
 "use strict";
 
 /* ============================================================
-   SHA-256 — plain JS, no crypto library (FIPS 180-4)
+   SHA-256 - plain JS, no crypto library (FIPS 180-4)
    ============================================================ */
 const K256 = new Uint32Array([
 0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
@@ -899,7 +951,7 @@ function modPow(base, exp, mod){
   return r;
 }
 
-/* RFC 6376 §3.4.4 — relaxed body canonicalisation */
+/* RFC 6376 §3.4.4 - relaxed body canonicalisation */
 function canonBodyRelaxed(body){
   const lines = body.replace(/\r\n/g,"\n").replace(/\r/g,"\n").split("\n")
     .map(l => l.replace(/[ \t]+/g," ").replace(/[ \t]+$/,""));
@@ -927,6 +979,20 @@ const SIG = BigInt("0x" + SIG_HEX);
 const $ = id => document.getElementById(id);
 const bodyEl = $("body");
 
+function renderHeroSignature(){
+  const shades = " .:-=+*#%@";
+  const bytes = SIG_HEX.match(/../g).map(v => parseInt(v, 16));
+  const rows = [];
+  for (let i = 0; i < bytes.length; i += 32){
+    rows.push(bytes.slice(i, i + 32)
+      .map(v => shades[Math.min(shades.length - 1, Math.floor(v / 256 * shades.length))])
+      .join(""));
+  }
+  $("hero-ascii").textContent = rows.join("\n");
+  $("hero-byte-count").textContent = bytes.length + " bytes";
+}
+renderHeroSignature();
+
 function setFlag(el, ok, okText, badText){
   el.dataset.state = ok ? "ok" : "bad";
   el.lastElementChild.textContent = ok ? okText : badText;
@@ -943,7 +1009,7 @@ function mapRegions(em, digestStart){
   const padLen = i - 2;
   const hasSep = em[i] === 0x00 ? 1 : 0;
   const derStart = i + hasSep;
-  /* not `derLen` — that name is the DER length parser further down */
+  /* not `derLen` - that name is the DER length parser further down */
   const derBytes = Math.max(0, digestStart - derStart);
   return {
     marker: Math.min(2, k), pad: padLen, sep: hasSep,
@@ -1061,13 +1127,13 @@ function run(){
 
   const digestStart = k - 32;
   const regions = mapRegions(em, digestStart);
-  $("emlen").textContent = `— ${k} bytes`;
+  $("emlen").textContent = `/ ${k} bytes`;
   renderMap(regions);
   $("hex").innerHTML = hexdump(em, regions);
   resolveHex($("hex"));
   $("timing").innerHTML =
-    `${k * 8}-bit modular exponentiation completed in <b>${rsaMs.toFixed(2)} ms</b> ` +
-    `&mdash; measured on your machine, just now.`;
+    `${k * 8}-bit modular exponentiation completed in <b>${rsaMs.toFixed(2)} ms</b>. ` +
+    `Measured on your machine, just now.`;
 
   const recoveredDigest = hex(em.slice(digestStart));
   $("em-digest").textContent = recoveredDigest;
@@ -1077,7 +1143,7 @@ function run(){
   $("em-digest").style.color = sigOk ? "var(--sig-lit)" : "var(--fail-lit)";
   setFlag($("flag3"), sigOk, "signature valid", "signature invalid");
 
-  /* The map reflects the RECOVERED BLOCK only — not the overall verdict.
+  /* The map reflects the RECOVERED BLOCK only - not the overall verdict.
      Editing the body does not touch the header signature, so the block stays
      valid and the map stays blue while step 01 fails. That is the truth and
      it is what the verdict text says; do not wire this to allOk. */
@@ -1091,22 +1157,22 @@ function run(){
   v.dataset.state = allOk ? "ok" : "bad";
 
   if (allOk){
-    $("verdict-title").textContent = "Verified — message authentic";
+    $("verdict-title").textContent = "Verified: message authentic";
     $("verdict-note").textContent =
       "The body hash matches and the recovered digest equals the one computed from the signed headers. " +
       "This message genuinely came from the holder of the example.com private key, unaltered.";
     glyph.setAttribute("d","M38 61.5 l14 14 L84 43");
     glyph.style.setProperty("--len","120");
   } else if (!bodyOk && sigOk){
-    $("verdict-title").textContent = "Failed — body altered after signing";
+    $("verdict-title").textContent = "Failed: body altered after signing";
     $("verdict-note").textContent =
       "The header signature is still cryptographically valid, but the body no longer hashes to the " +
-      "value the signer committed to. Someone changed the message in transit — which is exactly what " +
+      "value the signer committed to. Someone changed the message in transit. That is exactly what " +
       "DKIM exists to catch.";
     glyph.setAttribute("d","M42 42 L78 78 M78 42 L42 78");
     glyph.style.setProperty("--len","104");
   } else {
-    $("verdict-title").textContent = "Failed — signature does not verify";
+    $("verdict-title").textContent = "Failed: signature does not verify";
     $("verdict-note").textContent =
       "The recovered padding block does not match the expected PKCS#1 v1.5 structure over this digest.";
     glyph.setAttribute("d","M42 42 L78 78 M78 42 L42 78");
@@ -1139,7 +1205,7 @@ run();
 
 
 /* ============================================================
-   LIVE VERIFIER — parse, canonicalise and verify any pasted
+   LIVE VERIFIER - parse, canonicalise and verify any pasted
    message. Mirrors analyzer/dkim.py step for step.
    ============================================================ */
 
@@ -1283,7 +1349,7 @@ async function verifyPasted(){
   try{
     ({ fields, body } = splitMessage(raw));
     dkimIdx = fields.findIndex(f => f[0].trim().toLowerCase() === "dkim-signature");
-    if (dkimIdx < 0) throw new Error("no DKIM-Signature header found — make sure you copied the full raw source, headers included");
+    if (dkimIdx < 0) throw new Error("no DKIM-Signature header found. Make sure you copied the full raw source, headers included");
     tags = parseTags(fields[dkimIdx][1]);
     if (!tags.b || !tags.bh || !tags.d || !tags.s || !tags.h) throw new Error("the DKIM-Signature header is missing required tags");
   } catch (err){
@@ -1302,7 +1368,7 @@ async function verifyPasted(){
   $("lv-algo").textContent     = algo;
   $("lv-canon").textContent    = canonH + "/" + canonB;
   $("lv-h").textContent        = strip(tags.h).split(":").filter(Boolean).join(" · ");
-  $("lv-bits").textContent     = "—";
+  $("lv-bits").textContent     = "not run";
 
   if (algo !== "rsa-sha256"){
     setLiveVerdict("bad", "Unsupported algorithm",
@@ -1331,7 +1397,7 @@ async function verifyPasted(){
   if (!pm || !strip(pm[1])){
     liveFlag("lv-flag-key", "bad", "key not found");
     setLiveVerdict("bad", "Public key not published",
-      `No usable p= record at ${selector}._domainkey.${domain}. The selector may have been rotated out since the message was sent — signatures outlive their keys.`, true);
+      `No usable p= record at ${selector}._domainkey.${domain}. The selector may have been rotated out since the message was sent. Signatures outlive their keys.`, true);
     return;
   }
 
@@ -1368,13 +1434,13 @@ async function verifyPasted(){
   liveFlag("lv-flag-sig", sigOk ? "ok" : "bad", sigOk ? "signature valid" : "signature invalid");
 
   if (bodyOk && sigOk){
-    setLiveVerdict("ok", "Verified — this message is authentic",
+    setLiveVerdict("ok", "Verified: this message is authentic",
       `The body hashes to the value ${domain} committed to, and the digest recovered from the signature matches the one computed from the signed headers. This really was sent by the holder of ${domain}'s private key, and nothing has been altered since.`);
   } else if (!bodyOk && sigOk){
-    setLiveVerdict("bad", "Failed — body altered after signing",
+    setLiveVerdict("bad", "Failed: body altered after signing",
       "The header signature is cryptographically valid, but the body no longer hashes to the signed value. Either the message was modified in transit (a mailing list footer will do it) or the copy you pasted lost some whitespace.", true);
   } else {
-    setLiveVerdict("bad", "Failed — signature does not verify",
+    setLiveVerdict("bad", "Failed: signature does not verify",
       `The recovered block does not match a PKCS#1 v1.5 padding of this digest under ${domain}'s key. Most often this means the pasted source was reflowed or re-wrapped, which changes the exact bytes that were signed.`, true);
   }
 }

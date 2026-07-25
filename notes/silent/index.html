@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Three bugs an AI wrote that didn't crash — Kuba Opoczka</title>
+<title>Three bugs an AI wrote that didn't crash | Kuba Opoczka</title>
 <meta name="description" content="An AI wrote three bugs into a browser extension I shipped. None of them threw. All of them succeeded. What they had in common, and what it takes to catch that class of failure.">
 <link rel="canonical" href="https://smellybricc.github.io/verify/notes/silent/">
 <meta property="og:type" content="article">
@@ -180,7 +180,7 @@ footer .who{color:var(--ink); font-weight:700}
 
   <p>
     First, the uninteresting caveat: I'm early career and self-taught, and I direct AI agents to
-    write most of my code. That's not a confession, it's the setup — the whole point of what
+    write most of my code. That's not a confession, it's the setup; the whole point of what
     follows is what happens <em>after</em> the agent hands you something that looks finished.
   </p>
   <p>
@@ -214,12 +214,12 @@ walk(fiber.child,   depth + 1, out);
 
     <p>
       Children are one level deeper. <b>Siblings are not.</b> Incrementing depth on sibling
-      traversal means depth stops measuring depth and starts counting <em>everything</em> — so a
+      traversal means depth stops measuring depth and starts counting <em>everything</em>. So a
       flat list of forty items reads as forty levels deep and hits a cap meant for pathological
       nesting.
     </p>
     <p>
-      A forty-item list is not an edge case. It's a table, a dropdown, a feed — the single most
+      A forty-item list is not an edge case. It's a table, a dropdown, a feed: the single most
       common shape in a React app. The walker returned successfully every time, with the tail of
       your component tree quietly missing.
     </p>
@@ -227,7 +227,7 @@ walk(fiber.child,   depth + 1, out);
     <div class="verdict">
       <span class="lab">Why no test caught it</span>
       My fixtures were small. Every test tree had a handful of siblings, so every test passed.
-      The bug only exists at a scale I hadn't thought to write a fixture for — and it produced
+      The bug only exists at a scale I hadn't thought to write a fixture for. It produced
       <b>no error at that scale either</b>, just a shorter list than reality.
     </div>
   </section>
@@ -256,7 +256,7 @@ walk(fiber.child,   depth + 1, out);
     <p>
       Assignment, not extension. If the real React DevTools loaded first, I destroyed it. If it
       loaded second, it destroyed me. And injection order between two extensions in the page's
-      main world <b>is not guaranteed</b> — so the behaviour isn't just broken, it's
+      main world <b>is not guaranteed</b>, so the behaviour isn't just broken; it's
       nondeterministic.
     </p>
     <p>
@@ -295,7 +295,7 @@ walk(fiber.child,   depth + 1, out);
 
     <p>
       Both return success for a valid key. Both look correct in a happy-path test. But only
-      <code>activate</code> registers an <em>instance</em> — and the activation limit is enforced
+      <code>activate</code> registers an <em>instance</em>, and the activation limit is enforced
       against instances. Calling <code>validate</code> alone meant <b>no instance was ever
       registered, so the limit was never enforced.</b>
     </p>
@@ -318,7 +318,7 @@ walk(fiber.child,   depth + 1, out);
 
   <p>
     Three bugs, three different subsystems, one shape. Each sat exactly where my code met an
-    assumption I didn't own — <b>React's tree contract, another extension's namespace, a payment
+    assumption I didn't own: <b>React's tree contract, another extension's namespace, a payment
     provider's semantics.</b> Inside my own boundaries the agent's code was fine. At the seams it
     produced something that ran perfectly and meant the wrong thing.
   </p>
@@ -326,12 +326,12 @@ walk(fiber.child,   depth + 1, out);
     That makes sense when you think about how these models work. They produce what is
     <em>plausible</em>. Plausible and correct overlap almost completely in the middle of a
     function, and come apart at the edges, where correctness is defined by a system somewhere
-    else. And at exactly those edges there is no local signal — no exception, no failing
+    else. And at exactly those edges there is no local signal: no exception, no failing
     assertion, nothing red.
   </p>
 
   <div class="pull">
-    A crash tells you where to look. <span>These three told me nothing at all — they just ran.</span>
+    A crash tells you where to look. <span>These three told me nothing at all. They just ran.</span>
   </div>
 
   <h3>What actually caught them</h3>
@@ -342,7 +342,7 @@ walk(fiber.child,   depth + 1, out);
   </p>
   <p>
     An <b>independent review pass</b> that hadn't been told the code was finished. A <b>realistic
-    fixture</b> — a list long enough to matter. The <b>actual documentation</b> for someone else's
+    fixture</b>: a list long enough to matter. The <b>actual documentation</b> for someone else's
     API. And on a different project, the strongest one available: <b>a second, independent
     implementation of the same specification</b>, run against the first until they agreed byte for
     byte.
@@ -351,7 +351,7 @@ walk(fiber.child,   depth + 1, out);
     That last one is the technique I'd defend hardest. If you write the same spec twice by
     different routes and both outputs match on the awkward cases, you've learned something no
     amount of staring at one implementation can tell you. You can
-    <a href="../../">watch it working here</a> — a page that verifies a real email signature
+    <a href="../../">watch it working here</a>: a page that verifies a real email signature
     with two independent implementations checking each other, and lets you break it on purpose.
   </p>
 
@@ -364,7 +364,7 @@ walk(fiber.child,   depth + 1, out);
     also precisely why they're confident at the seams, where "usually" is wrong.
   </p>
   <p>
-    So the work moved. It isn't typing any more, and it isn't prompting either — prompting is
+    So the work moved. It isn't typing any more, and it isn't prompting either. Prompting is
     easy and everyone can do it. The work is <b>deciding what correct means, and building the
     thing that can tell you when you don't have it.</b> Tests, review passes, second
     implementations, negative cases that prove your checker can actually fail.
@@ -378,7 +378,7 @@ walk(fiber.child,   depth + 1, out);
   <p style="margin-top:2em; color:var(--faint); font-size:15.4px">
     The three fixes above are in
     <a href="https://github.com/SmellyBricc/zustand-devtools" rel="noopener">this public repository</a>
-    if you want to read them rather than take my word for it &mdash; which is rather the theme.
+    if you want to read them rather than take my word for it. That is rather the theme.
   </p>
 
 </article>

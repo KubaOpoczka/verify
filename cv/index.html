@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Auditable CV — Kuba Opoczka</title>
-<meta name="description" content="A CV that checks itself. Claims are verified live against GitHub and npm as the page loads — and the ones that can't be are labelled as such.">
+<title>Auditable CV | Kuba Opoczka</title>
+<meta name="description" content="A CV that checks itself. Claims are verified live against GitHub and npm as the page loads. The ones that can't be are labelled as such.">
 <link rel="canonical" href="https://smellybricc.github.io/verify/cv/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://smellybricc.github.io/verify/cv/">
-<meta property="og:title" content="Auditable CV — Kuba Opoczka">
-<meta property="og:description" content="A CV that checks itself. Claims are verified live against GitHub and npm as the page loads — and the ones that can't be are labelled as such.">
+<meta property="og:title" content="Auditable CV | Kuba Opoczka">
+<meta property="og:description" content="A CV that checks itself. Claims are verified live against GitHub and npm as the page loads. The ones that can't be are labelled as such.">
 <meta property="og:image" content="https://smellybricc.github.io/verify/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <style>
@@ -118,7 +118,7 @@ h1 em{font-style:normal; color:var(--blue)}
 .key b{font-weight:700}
 .key .kv{color:var(--blue)} .key .ki{color:var(--amber)} .key .kn{color:var(--dim)}
 
-/* claims — the ID is the structure, no boxes */
+/* claims: the ID is the structure, no boxes */
 .claim{
   display:grid;
   grid-template-columns:minmax(4.2ch,auto) minmax(0,1fr);
@@ -235,8 +235,8 @@ footer .who{color:var(--ink); font-weight:700}
       and filled in the real values. The raw responses are drifting behind this text.
     </p>
     <p class="lede" style="margin-top:16px">
-      What a machine can't check is labelled as such rather than dressed up as verified —
-      that's the part worth noticing. Every claim has its own link. See also the
+      What a machine can't check is labelled as such rather than dressed up as verified.
+      That's the part worth noticing. Every claim has its own link. See also the
       <a href="../">signature verifier</a>.
     </p>
   </header>
@@ -257,7 +257,7 @@ footer .who{color:var(--ink); font-weight:700}
     <article class="claim" data-k="v" id="V-01">
       <div class="cid"><a href="#V-01" aria-label="Link to claim V-01">V01</a></div>
       <div class="head">
-        <h2 class="what">I publish code publicly under the handle <strong>SmellyBricc</strong>.</h2>
+        <h2 class="what">I publish working code in <strong>public repositories you can inspect</strong>.</h2>
         <span class="stamp" data-s="checking" id="t-user"><span class="d"></span><span>checking</span></span>
       </div>
       <div class="ev" id="e-user">api.github.com/users/SmellyBricc</div>
@@ -266,7 +266,7 @@ footer .who{color:var(--ink); font-weight:700}
     <article class="claim" data-k="v" id="V-02">
       <div class="cid"><a href="#V-02" aria-label="Link to claim V-02">V02</a></div>
       <div class="head">
-        <h2 class="what">I have a package published on the npm registry — <span class="m">zustand-devtools-bridge</span>.</h2>
+        <h2 class="what">I have a package published on the npm registry: <span class="m">zustand-devtools-bridge</span>.</h2>
         <span class="stamp" data-s="checking" id="t-npm"><span class="d"></span><span>checking</span></span>
       </div>
       <div class="ev" id="e-npm">registry.npmjs.org/zustand-devtools-bridge</div>
@@ -293,13 +293,13 @@ footer .who{color:var(--ink); font-weight:700}
     <article class="claim" data-k="i" id="I-01">
       <div class="cid"><a href="#I-01" aria-label="Link to claim I-01">I01</a></div>
       <div class="head">
-        <h2 class="what">The DKIM verifier is built from first principles — <strong>no cryptography library</strong>.</h2>
+        <h2 class="what">The DKIM verifier is built from first principles. <strong>No cryptography library.</strong></h2>
         <span class="stamp" data-s="inspect"><span class="d"></span><span>inspect</span></span>
       </div>
       <div class="ev">
         RFC 6376 canonicalisation, DER public-key parsing, PKCS#1 v1.5. The RSA step is a
         three-argument <span class="val">pow()</span> and a byte comparison. No API can confirm
-        an absence — you have to look. It's in the page source of the
+        an absence; you have to look. It's in the page source of the
         <a href="../">verifier</a>; search <span class="val">_rsa_verify</span> and
         <span class="val">sha256</span>.
       </div>
@@ -313,8 +313,8 @@ footer .who{color:var(--ink); font-weight:700}
       </div>
       <div class="ev">
         Count them yourself:
-        <a href="https://github.com/SmellyBricc/zustand-devtools" rel="noopener">github.com/SmellyBricc/zustand-devtools</a>
-        — the suite runs with <span class="val">npm run check</span>.
+        <a href="https://github.com/SmellyBricc/zustand-devtools" rel="noopener">github.com/SmellyBricc/zustand-devtools</a>.
+        The suite runs with <span class="val">npm run check</span>.
       </div>
     </article>
 
@@ -327,7 +327,7 @@ footer .who{color:var(--ink); font-weight:700}
       <div class="ev">
         Seven awkward cases: folded headers, repeated headers, tabs and trailing whitespace,
         a signed header that's absent, an empty body. Method in the
-        <a href="../#how">colophon</a> — and reproducible: paste your own email into the
+        <a href="../#how">colophon</a>. It is reproducible: paste your own email into the
         verifier and the same code path runs.
       </div>
     </article>
@@ -335,20 +335,20 @@ footer .who{color:var(--ink); font-weight:700}
     <article class="claim" data-k="n" id="N-01">
       <div class="cid"><a href="#N-01" aria-label="Link to claim N-01">N01</a></div>
       <div class="head">
-        <h2 class="what">DAEMON: <strong>28 Python modules, 130 passing tests</strong> — an email threat-intelligence console.</h2>
+        <h2 class="what">DAEMON: an email threat-intelligence console with <strong>28 Python modules and 130 passing tests</strong>.</h2>
         <span class="stamp" data-s="unverified"><span class="d"></span><span>not public</span></span>
       </div>
       <div class="ev">
         This repository isn't public, so you can't check that number from here. I'll walk through
         the code or screen-share the suite on request. The DKIM module from it <em>is</em>
-        public — it's the one running in the <a href="../">verifier</a>.
+        public. It's the one running in the <a href="../">verifier</a>.
       </div>
     </article>
 
     <article class="claim" data-k="n" id="N-02">
       <div class="cid"><a href="#N-02" aria-label="Link to claim N-02">N02</a></div>
       <div class="head">
-        <h2 class="what"><strong>BABAFlow</strong> and <strong>Found Local</strong> — a compliance platform and a productised web-design service.</h2>
+        <h2 class="what"><strong>BABAFlow</strong> and <strong>Found Local</strong>: a compliance platform and a productised web-design service.</h2>
         <span class="stamp" data-s="unverified"><span class="d"></span><span>not public</span></span>
       </div>
       <div class="ev">
@@ -365,7 +365,7 @@ footer .who{color:var(--ink); font-weight:700}
       </div>
       <div class="ev">
         Laptoplabs in Bray, retail at Dunnes Stores, Presentation College Bray. Ordinary
-        employment history — references on request. No way to prove it from a web page, and
+        employment history. References on request. No way to prove it from a web page, and
         I won't pretend otherwise.
       </div>
     </article>
@@ -376,7 +376,7 @@ footer .who{color:var(--ink); font-weight:700}
       <h2>What this page requests</h2>
       <p>
         Two anonymous, read-only <span class="mono">GET</span>s against endpoints serving
-        <b>already-public</b> data — the same numbers on my GitHub and npm pages.
+        <b>already-public</b> data: the same numbers on my GitHub and npm pages.
       </p>
       <p>
         There is <b>no API key or token in this page</b>, deliberately: a credential in a public
@@ -437,7 +437,7 @@ const checks = [
   { tag:"t-user", ev:"e-user", url:"https://api.github.com/users/SmellyBricc",
     ok:d => `<span class="val">${d.public_repos}</span> public repositories &middot; account created
       <span class="val">${fmtDate(d.created_at)}</span> &middot;
-      <a href="https://github.com/SmellyBricc" rel="noopener">github.com/SmellyBricc</a>` },
+      <a href="https://github.com/SmellyBricc" rel="noopener">open GitHub profile</a>` },
   { tag:"t-npm", ev:"e-npm", url:"https://registry.npmjs.org/zustand-devtools-bridge",
     ok(d){ const v=d["dist-tags"]&&d["dist-tags"].latest; if(!v) throw new Error("no latest tag");
       return `latest <span class="val">v${esc(v)}</span> &middot; published
@@ -445,7 +445,7 @@ const checks = [
       <a href="https://www.npmjs.com/package/zustand-devtools-bridge" rel="noopener">view on npm</a>`; } },
   { tag:"t-zd", ev:"e-zd", url:"https://api.github.com/repos/SmellyBricc/zustand-devtools",
     ok:d => `licence <span class="val">${esc((d.license&&d.license.spdx_id)||"see repo")}</span> &middot;
-      language <span class="val">${esc(d.language||"—")}</span> &middot; last push
+      language <span class="val">${esc(d.language||"unknown")}</span> &middot; last push
       <span class="val">${fmtDate(d.pushed_at)}</span> &middot;
       <a href="${esc(d.html_url)}" rel="noopener">open repository</a>` },
   { tag:"t-verify", ev:"e-verify", url:"https://api.github.com/repos/SmellyBricc/verify",
@@ -510,7 +510,7 @@ function countTo(el, n){
       pass++;
     } catch (err){
       setStamp(c.tag, "failed", "check failed");
-      $(c.ev).innerHTML = `Could not reach the API just now (${esc(err.message)}) — GitHub
+      $(c.ev).innerHTML = `Could not reach the API just now (${esc(err.message)}). GitHub
         rate-limits anonymous requests, so this happens. Check it yourself:
         <a href="${esc(c.url)}" rel="noopener">${esc(c.url)}</a>`;
       fail++;
