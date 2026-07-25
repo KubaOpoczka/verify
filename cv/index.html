@@ -275,6 +275,23 @@ footer .who{color:var(--ink); font-weight:700}
 
   </section>
 
+  <section class="note" style="margin-bottom:clamp(18px,2.4vw,22px)">
+    <h2>What this page does and doesn't do</h2>
+    <p>
+      The two requests are anonymous, read-only <span class="mono">GET</span>s to endpoints that
+      serve <b>already-public</b> data — the same numbers you'd see on my GitHub and npm pages.
+      There is <b>no API key or token in this page</b>, deliberately: a credential in a public
+      page is a leaked credential, so instead of raising GitHub's anonymous rate limit I let a
+      blocked request fail honestly and show you the endpoint.
+    </p>
+    <p>
+      Nothing about you is collected or sent anywhere. The one thing worth stating plainly:
+      your browser contacts <span class="mono">api.github.com</span> and
+      <span class="mono">registry.npmjs.org</span>, so those two services see your IP address,
+      the same as any embedded image would.
+    </p>
+  </section>
+
   <section class="note">
     <h2>Why build a CV like this</h2>
     <p>
