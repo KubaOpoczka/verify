@@ -34,7 +34,8 @@
   --e:cubic-bezier(.16,1,.3,1);
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%; scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{
   background:var(--paper); color:var(--ink); font-family:var(--sans);
   font-size:16px; line-height:1.55; -webkit-font-smoothing:antialiased;
@@ -78,25 +79,48 @@ h1{font-size:clamp(29px,5.2vw,52px); line-height:1.04; letter-spacing:-.03em; fo
 }
 @keyframes blip{0%,100%{opacity:1}50%{opacity:.25}}
 
-/* claims */
-.claims{padding:clamp(18px,3vw,30px) clamp(20px,4vw,48px) clamp(24px,4vw,44px)}
-.group{margin-top:clamp(24px,3.4vw,36px)}
-.group:first-child{margin-top:6px}
-.group > h2{
-  font-family:var(--mono); font-size:11.5px; letter-spacing:.18em; text-transform:uppercase;
-  color:var(--graphite); padding-bottom:10px; border-bottom:1px solid var(--hair); margin-bottom:4px;
+/* claims: an audit ledger. The claim ID carries the grouping, so no
+   uppercase section eyebrows are needed. */
+.claims{padding:clamp(20px,3vw,34px) clamp(20px,4vw,48px) clamp(24px,4vw,44px)}
+
+.ledger-key{
+  display:flex; flex-wrap:wrap; gap:8px 22px; align-items:baseline;
+  font-family:var(--mono); font-size:12px; color:var(--graphite);
+  padding-bottom:14px; border-bottom:1px solid var(--hair-strong); margin-bottom:6px;
 }
+.ledger-key span b{font-weight:700}
+.ledger-key .kv{color:var(--blue)}
+.ledger-key .ki{color:var(--amber)}
+.ledger-key .kn{color:var(--graphite)}
 
 .claim{
-  display:grid; grid-template-columns:1fr auto; gap:6px clamp(14px,2.4vw,24px);
-  align-items:start; padding:16px 0; border-bottom:1px solid var(--hair);
+  display:grid;
+  grid-template-columns:5.2rem 1fr minmax(7.5rem,auto);
+  gap:4px clamp(14px,2.2vw,26px);
+  padding:18px 0; border-bottom:1px solid var(--hair);
+  align-items:start;
 }
 .claim:last-child{border-bottom:0}
-.claim .what{font-size:15.6px; text-wrap:pretty}
+
+.cid{
+  font-family:var(--mono); font-size:12.5px; font-weight:700; letter-spacing:.04em;
+  padding-top:3px; white-space:nowrap;
+}
+.cid a{color:inherit; text-decoration:none; border-bottom:1px solid transparent}
+.cid a:hover{border-bottom-color:currentColor}
+.cid a:focus-visible{outline:2px solid var(--blue); outline-offset:3px}
+/* landing on a deep link marks the claim without moving anything */
+.claim:target{background:rgba(127,160,255,.055); box-shadow:inset 3px 0 0 var(--blue)}
+.claim:target .cid a{border-bottom-color:currentColor}
+.claim[data-k="v"] .cid{color:var(--blue)}
+.claim[data-k="i"] .cid{color:var(--amber)}
+.claim[data-k="n"] .cid{color:var(--graphite)}
+
+.claim .what{font-size:15.8px; line-height:1.5; text-wrap:pretty}
 .claim .what strong{font-weight:650}
 .claim .ev{
-  grid-column:1/-1; font-family:var(--mono); font-size:12.6px; line-height:1.7;
-  color:var(--graphite); word-break:break-word;
+  grid-column:2/3; font-family:var(--mono); font-size:12.6px; line-height:1.75;
+  color:var(--graphite); word-break:break-word; margin-top:7px;
 }
 .claim .ev a{color:var(--blue); text-decoration:none; border-bottom:1px solid transparent}
 .claim .ev a:hover{border-bottom-color:var(--blue)}
@@ -104,9 +128,9 @@ h1{font-size:clamp(29px,5.2vw,52px); line-height:1.04; letter-spacing:-.03em; fo
 .claim .ev .val{color:var(--ink); font-weight:600}
 
 .tag{
-  font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.13em;
+  font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.12em;
   text-transform:uppercase; padding:4px 9px; border:1px solid; white-space:nowrap;
-  display:inline-flex; align-items:center; gap:6px; align-self:start;
+  display:inline-flex; align-items:center; gap:6px; justify-self:end; align-self:start;
   transition:color .3s var(--e), background .3s var(--e), border-color .3s var(--e);
 }
 .tag .dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
@@ -115,6 +139,34 @@ h1{font-size:clamp(29px,5.2vw,52px); line-height:1.04; letter-spacing:-.03em; fo
 .tag[data-s="inspect"]{color:var(--amber); border-color:#8A6A28; background:var(--amber-soft)}
 .tag[data-s="unverified"]{color:var(--graphite); border-color:var(--hair-strong); background:var(--grey-soft)}
 .tag[data-s="failed"]{color:#FF9C82; border-color:#8A3A24; background:rgba(255,120,90,.12)}
+
+/* summary: real scale contrast instead of another label row */
+.summary{
+  display:grid; grid-template-columns:repeat(3,1fr);
+  border:1px solid var(--hair-strong); margin:clamp(22px,3vw,30px) 0 0;
+}
+.summary div{padding:18px clamp(14px,2vw,20px); border-right:1px solid var(--hair)}
+.summary div:last-child{border-right:0}
+.summary .n{
+  font-size:clamp(30px,4.4vw,44px); line-height:1; font-weight:700; letter-spacing:-.04em;
+  font-family:var(--mono);
+}
+.summary div:nth-child(1) .n{color:var(--blue)}
+.summary div:nth-child(2) .n{color:var(--amber)}
+.summary div:nth-child(3) .n{color:var(--graphite)}
+.summary .l{
+  margin-top:8px; font-size:13.4px; color:var(--graphite); line-height:1.4; text-wrap:pretty;
+}
+
+@media (max-width:620px){
+  .claim{grid-template-columns:1fr auto}
+  .cid{grid-row:1}
+  .claim .what{grid-column:1/-1}
+  .claim .ev{grid-column:1/-1}
+  .summary{grid-template-columns:1fr}
+  .summary div{border-right:0; border-bottom:1px solid var(--hair)}
+  .summary div:last-child{border-bottom:0}
+}
 
 /* honesty note */
 .note{
@@ -140,10 +192,6 @@ footer .who{color:var(--ink); font-weight:700}
 .skip{position:absolute;left:-9999px}
 .skip:focus{left:16px;top:16px;background:var(--ink);color:var(--sheet);padding:10px 14px;z-index:10}
 
-@media (max-width:560px){
-  .claim{grid-template-columns:1fr}
-  .tag{grid-row:1; justify-self:start}
-}
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.001s!important; transition-duration:.001s!important}
 }
@@ -178,99 +226,109 @@ footer .who{color:var(--ink); font-weight:700}
 
   <div class="statusbar" id="statusbar" aria-live="polite">
     <span><span class="spin" id="spin"></span> <b id="status">Querying GitHub and npm…</b></span>
-    <span id="tally"></span>
+    <span id="stamp"></span>
   </div>
 
   <section class="claims" id="claims">
 
-    <div class="group">
-      <h2>Verified live, as this page loaded</h2>
+    <div class="ledger-key">
+      <span><b class="kv">V</b> checked live against an API</span>
+      <span><b class="ki">I</b> open to inspection &mdash; read the code</span>
+      <span><b class="kn">N</b> not publicly verifiable</span>
+    </div>
 
-      <div class="claim">
-        <div class="what"><strong>I publish code publicly under the handle SmellyBricc.</strong></div>
-        <span class="tag" data-s="checking" id="t-user"><span class="dot"></span><span>checking</span></span>
-        <div class="ev" id="e-user">api.github.com/users/SmellyBricc</div>
-      </div>
+    <div class="claim" data-k="v" id="V-01">
+      <div class="cid"><a href="#V-01" aria-label="Link to claim V-01">V-01</a></div>
+      <div class="what"><strong>I publish code publicly under the handle SmellyBricc.</strong></div>
+      <span class="tag" data-s="checking" id="t-user"><span class="dot"></span><span>checking</span></span>
+      <div class="ev" id="e-user">api.github.com/users/SmellyBricc</div>
+    </div>
 
-      <div class="claim">
-        <div class="what"><strong>I have a package published on the npm registry</strong> — <span class="mono">zustand-devtools-bridge</span>, the companion library for my Chrome DevTools extension.</div>
-        <span class="tag" data-s="checking" id="t-npm"><span class="dot"></span><span>checking</span></span>
-        <div class="ev" id="e-npm">registry.npmjs.org/zustand-devtools-bridge</div>
-      </div>
+    <div class="claim" data-k="v" id="V-02">
+      <div class="cid"><a href="#V-02" aria-label="Link to claim V-02">V-02</a></div>
+      <div class="what"><strong>I have a package published on the npm registry</strong> &mdash; <span class="mono">zustand-devtools-bridge</span>, the companion library for my Chrome DevTools extension.</div>
+      <span class="tag" data-s="checking" id="t-npm"><span class="dot"></span><span>checking</span></span>
+      <div class="ev" id="e-npm">registry.npmjs.org/zustand-devtools-bridge</div>
+    </div>
 
-      <div class="claim">
-        <div class="what"><strong>The Zustand DevTools extension source is public and MIT licensed.</strong></div>
-        <span class="tag" data-s="checking" id="t-zd"><span class="dot"></span><span>checking</span></span>
-        <div class="ev" id="e-zd">api.github.com/repos/SmellyBricc/zustand-devtools</div>
-      </div>
+    <div class="claim" data-k="v" id="V-03">
+      <div class="cid"><a href="#V-03" aria-label="Link to claim V-03">V-03</a></div>
+      <div class="what"><strong>The Zustand DevTools extension source is public and MIT licensed.</strong></div>
+      <span class="tag" data-s="checking" id="t-zd"><span class="dot"></span><span>checking</span></span>
+      <div class="ev" id="e-zd">api.github.com/repos/SmellyBricc/zustand-devtools</div>
+    </div>
 
-      <div class="claim">
-        <div class="what"><strong>The signature verifier you can try is my code, and it is still maintained.</strong></div>
-        <span class="tag" data-s="checking" id="t-verify"><span class="dot"></span><span>checking</span></span>
-        <div class="ev" id="e-verify">api.github.com/repos/SmellyBricc/verify</div>
+    <div class="claim" data-k="v" id="V-04">
+      <div class="cid"><a href="#V-04" aria-label="Link to claim V-04">V-04</a></div>
+      <div class="what"><strong>The signature verifier you can try is my code, and it is still maintained.</strong></div>
+      <span class="tag" data-s="checking" id="t-verify"><span class="dot"></span><span>checking</span></span>
+      <div class="ev" id="e-verify">api.github.com/repos/SmellyBricc/verify</div>
+    </div>
+
+    <div class="claim" data-k="i" id="I-01">
+      <div class="cid"><a href="#I-01" aria-label="Link to claim I-01">I-01</a></div>
+      <div class="what"><strong>The DKIM verifier is built from first principles: RFC 6376 canonicalisation, DER public-key parsing and PKCS#1 v1.5, with no cryptography library.</strong> The RSA step is a three-argument <span class="mono">pow()</span> and a byte comparison.</div>
+      <span class="tag" data-s="inspect"><span class="dot"></span><span>inspect</span></span>
+      <div class="ev">
+        No API can confirm &ldquo;no crypto library&rdquo; &mdash; you have to look. The JavaScript
+        implementation is in the page source of the <a href="../">verifier</a>
+        (search <span class="val">_rsa_verify</span> and <span class="val">sha256</span>), and the
+        eight-line Python original is quoted in full there.
       </div>
     </div>
 
-    <div class="group">
-      <h2>Open to inspection — read the code yourself</h2>
-
-      <div class="claim">
-        <div class="what"><strong>The DKIM verifier is built from first principles: RFC 6376 canonicalisation, DER public-key parsing and PKCS#1 v1.5, with no cryptography library.</strong> The RSA step is a three-argument <span class="mono">pow()</span> and a byte comparison.</div>
-        <span class="tag" data-s="inspect"><span class="dot"></span><span>inspect</span></span>
-        <div class="ev">
-          No API can confirm "no crypto library" — you have to look. The JavaScript implementation
-          is in the page source of the
-          <a href="../">verifier</a> (search <span class="val">_rsa_verify</span> and <span class="val">sha256</span>),
-          and the eight-line Python original is quoted in full there.
-        </div>
-      </div>
-
-      <div class="claim">
-        <div class="what"><strong>96 automated tests in the DevTools extension, across two major framework versions.</strong></div>
-        <span class="tag" data-s="inspect"><span class="dot"></span><span>inspect</span></span>
-        <div class="ev">
-          Count them: <a href="https://github.com/SmellyBricc/zustand-devtools" rel="noopener">github.com/SmellyBricc/zustand-devtools</a>
-          — the suite runs with <span class="val">npm run check</span>.
-        </div>
-      </div>
-
-      <div class="claim">
-        <div class="what"><strong>Two independent implementations of the same specification agree byte for byte</strong> across seven awkward canonicalisation cases — folded headers, repeated headers, tabs and trailing whitespace, a signed header that is absent, an empty body.</div>
-        <span class="tag" data-s="inspect"><span class="dot"></span><span>inspect</span></span>
-        <div class="ev">
-          The method is written up in the <a href="../#how">colophon</a>. The claim is reproducible:
-          paste your own email into the verifier and the same code path runs.
-        </div>
+    <div class="claim" data-k="i" id="I-02">
+      <div class="cid"><a href="#I-02" aria-label="Link to claim I-02">I-02</a></div>
+      <div class="what"><strong>96 automated tests in the DevTools extension, across two major framework versions.</strong></div>
+      <span class="tag" data-s="inspect"><span class="dot"></span><span>inspect</span></span>
+      <div class="ev">
+        Count them: <a href="https://github.com/SmellyBricc/zustand-devtools" rel="noopener">github.com/SmellyBricc/zustand-devtools</a>
+        &mdash; the suite runs with <span class="val">npm run check</span>.
       </div>
     </div>
 
-    <div class="group">
-      <h2>Not publicly verifiable — and I'd rather say so</h2>
-
-      <div class="claim">
-        <div class="what"><strong>DAEMON: 28 Python modules, 130 passing tests</strong>, an email threat-intelligence console with campaign correlation and Sigma/YARA rule generation.</div>
-        <span class="tag" data-s="unverified"><span class="dot"></span><span>not public</span></span>
-        <div class="ev">
-          This repository is not public, so you cannot check the number from here. I'll walk through
-          the code or screen-share the suite running on request. The DKIM module from it <em>is</em>
-          public — it's the one running in the <a href="../">verifier</a>.
-        </div>
+    <div class="claim" data-k="i" id="I-03">
+      <div class="cid"><a href="#I-03" aria-label="Link to claim I-03">I-03</a></div>
+      <div class="what"><strong>Two independent implementations of the same specification agree byte for byte</strong> across seven awkward canonicalisation cases &mdash; folded headers, repeated headers, tabs and trailing whitespace, a signed header that is absent, an empty body.</div>
+      <span class="tag" data-s="inspect"><span class="dot"></span><span>inspect</span></span>
+      <div class="ev">
+        The method is written up in the <a href="../#how">colophon</a>. The claim is reproducible:
+        paste your own email into the verifier and the same code path runs.
       </div>
+    </div>
 
-      <div class="claim">
-        <div class="what"><strong>BABAFlow</strong> (federal-compliance document platform) and <strong>Found Local</strong> (productised web-design service, 31 tests).</div>
-        <span class="tag" data-s="unverified"><span class="dot"></span><span>not public</span></span>
-        <div class="ev">
-          Built, not trading — neither is a running business and I'm not claiming customers or
-          revenue for either. Private repositories; available to review on request.
-        </div>
+    <div class="claim" data-k="n" id="N-01">
+      <div class="cid"><a href="#N-01" aria-label="Link to claim N-01">N-01</a></div>
+      <div class="what"><strong>DAEMON: 28 Python modules, 130 passing tests</strong>, an email threat-intelligence console with campaign correlation and Sigma/YARA rule generation.</div>
+      <span class="tag" data-s="unverified"><span class="dot"></span><span>not public</span></span>
+      <div class="ev">
+        This repository is not public, so you cannot check the number from here. I&rsquo;ll walk
+        through the code or screen-share the suite running on request. The DKIM module from it
+        <em>is</em> public &mdash; it&rsquo;s the one running in the <a href="../">verifier</a>.
       </div>
+    </div>
 
-      <div class="claim">
-        <div class="what"><strong>Two and a half years diagnosing hardware and software faults</strong> at Laptoplabs, Bray; retail at Dunnes Stores; Leaving Certificate 2024, Presentation College Bray.</div>
-        <span class="tag" data-s="unverified"><span class="dot"></span><span>references</span></span>
-        <div class="ev">Ordinary employment history. References available on request — no way to prove it from a web page, and I won't pretend otherwise.</div>
+    <div class="claim" data-k="n" id="N-02">
+      <div class="cid"><a href="#N-02" aria-label="Link to claim N-02">N-02</a></div>
+      <div class="what"><strong>BABAFlow</strong> (federal-compliance document platform) and <strong>Found Local</strong> (productised web-design service, 31 tests).</div>
+      <span class="tag" data-s="unverified"><span class="dot"></span><span>not public</span></span>
+      <div class="ev">
+        Built, not trading &mdash; neither is a running business and I&rsquo;m not claiming customers
+        or revenue for either. Private repositories; available to review on request.
       </div>
+    </div>
+
+    <div class="claim" data-k="n" id="N-03">
+      <div class="cid"><a href="#N-03" aria-label="Link to claim N-03">N-03</a></div>
+      <div class="what"><strong>Two and a half years diagnosing hardware and software faults</strong> at Laptoplabs, Bray; retail at Dunnes Stores; Leaving Certificate 2024, Presentation College Bray.</div>
+      <span class="tag" data-s="unverified"><span class="dot"></span><span>references</span></span>
+      <div class="ev">Ordinary employment history. References available on request &mdash; no way to prove it from a web page, and I won&rsquo;t pretend otherwise.</div>
+    </div>
+
+    <div class="summary" id="summary">
+      <div><div class="n" id="s-v">&mdash;</div><div class="l">claims checked live against GitHub and npm as this page loaded</div></div>
+      <div><div class="n" id="s-i">&mdash;</div><div class="l">you can confirm yourself by reading the code</div></div>
+      <div><div class="n" id="s-n">&mdash;</div><div class="l">I cannot prove from here, and have said so</div></div>
     </div>
 
   </section>
@@ -399,10 +457,10 @@ const checks = [
   $("status").textContent = fail
     ? `${pass} of ${checks.length} live checks passed, ${fail} could not be reached`
     : `All ${checks.length} live checks passed`;
-  const inspect = document.querySelectorAll('.tag[data-s="inspect"]').length;
-  const notpub  = document.querySelectorAll('.tag[data-s="unverified"]').length;
-  $("tally").innerHTML =
-    `<b>${pass}</b> verified live &nbsp;·&nbsp; <b>${inspect}</b> open to inspection &nbsp;·&nbsp; <b>${notpub}</b> not publicly verifiable`;
+  $("s-v").textContent = String(pass);
+  $("s-i").textContent = String(document.querySelectorAll('.tag[data-s="inspect"]').length);
+  $("s-n").textContent = String(document.querySelectorAll('.tag[data-s="unverified"]').length);
+  $("stamp").innerHTML = `checked <b>${new Date().toLocaleString("en-IE",{dateStyle:"medium",timeStyle:"short"})}</b>`;
 })();
 </script>
 </body>
