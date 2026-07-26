@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kuba Opoczka | AI-Native Software Builder</title>
+<meta name="description" content="Working software, adversarial tests and public evidence from Kuba Opoczka, an early-career software builder who directs AI and verifies the result.">
+<link rel="canonical" href="https://smellybricc.github.io/verify/proof/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://smellybricc.github.io/verify/proof/">
+<meta property="og:title" content="Kuba Opoczka | AI-Native Software Builder">
+<meta property="og:description" content="AI builds. Kuba verifies. See the working products and the evidence behind them.">
+<meta property="og:image" content="https://smellybricc.github.io/verify/proof/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#08090c">
+<style>
+@font-face{
+  font-family:"Bricolage"; src:url("../fonts/BricolageGrotesque-var.woff2") format("woff2");
+  font-weight:200 800; font-display:swap;
+}
+@font-face{
+  font-family:"JetBrains"; src:url("../fonts/JetBrainsMono-var.woff2") format("woff2");
+  font-weight:100 800; font-display:swap;
+}
+:root{
+  color-scheme:dark;
+  --bg:#08090c;
+  --panel:#0e1117;
+  --panel-2:#121620;
+  --ink:#f1f4f8;
+  --muted:#a7b0be;
+  --faint:#737d8c;
+  --line:#252c38;
+  --line-strong:#394354;
+  --blue:#4d72ff;
+  --blue-action:#3763ee;
+  --blue-lit:#91a9ff;
+  --blue-wash:rgba(77,114,255,.12);
+  --sans:"Bricolage",system-ui,sans-serif;
+  --mono:"JetBrains",ui-monospace,monospace;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--sans); font-size:17px; line-height:1.55;
+  text-rendering:optimizeLegibility;
+}
+a{color:inherit}
+img{display:block; width:100%}
+button,a{touch-action:manipulation}
+::selection{background:var(--blue); color:var(--ink)}
+.skip{
+  position:fixed; left:18px; top:16px; z-index:20; transform:translateY(-160%);
+  background:var(--ink); color:var(--bg); padding:10px 14px; font:700 12px var(--mono);
+}
+.skip:focus{transform:none}
+.wrap{width:min(1120px,calc(100% - 48px)); margin-inline:auto}
+header{
+  height:68px; border-bottom:1px solid var(--line);
+  background:rgba(8,9,12,.92); backdrop-filter:blur(14px);
+  position:sticky; top:0; z-index:10;
+}
+.nav{
+  height:100%; display:flex; align-items:center; justify-content:space-between; gap:24px;
+}
+.brand{
+  display:flex; align-items:center; gap:12px; text-decoration:none; min-width:0;
+  font-weight:700; letter-spacing:-.01em;
+}
+.mark{
+  width:32px; height:32px; display:grid; place-items:center; flex:0 0 auto;
+  background:var(--blue-action); color:var(--ink); font:800 11px var(--mono); letter-spacing:-.08em;
+}
+.nav-links{display:flex; align-items:center; gap:24px; font:600 12px var(--mono)}
+.nav-links a{text-decoration:none; color:var(--muted)}
+.nav-links a:hover,.nav-links a:focus-visible{color:var(--ink)}
+:focus-visible{outline:2px solid var(--blue-lit); outline-offset:4px}
+
+.hero{
+  min-height:calc(100dvh - 68px); display:grid; align-items:center;
+  padding:clamp(44px,6vw,76px) 0;
+  border-bottom:1px solid var(--line);
+}
+.hero-grid{
+  display:grid; grid-template-columns:minmax(0,.92fr) minmax(420px,1.08fr);
+  gap:clamp(42px,7vw,92px); align-items:center;
+}
+h1{
+  margin:0; max-width:12ch; font-size:clamp(58px,7vw,94px);
+  line-height:.92; letter-spacing:-.055em; font-weight:750;
+}
+h1 span{display:block; color:var(--blue-lit)}
+.hero-copy p{
+  max-width:53ch; margin:28px 0 0; color:var(--muted);
+  font-size:clamp(17px,1.55vw,20px); line-height:1.48;
+}
+.actions{display:flex; flex-wrap:wrap; gap:12px; margin-top:30px}
+.button{
+  min-height:46px; display:inline-flex; align-items:center; justify-content:center;
+  padding:11px 18px; border:1px solid var(--blue-action); background:var(--blue-action);
+  color:var(--ink); text-decoration:none; font:750 12px var(--mono);
+  transition:transform .18s var(--ease),background .18s var(--ease),border-color .18s var(--ease);
+  white-space:nowrap;
+}
+.button:hover{transform:translateY(-2px); background:#3f62e8}
+.button:active{transform:translateY(0)}
+.button.secondary{background:transparent; border-color:var(--line-strong)}
+.button.secondary:hover{background:var(--blue-wash); border-color:var(--blue)}
+
+.hero-visual{position:relative; min-width:0}
+.hero-visual::before{
+  content:""; position:absolute; inset:-24px 24px 24px -24px; pointer-events:none;
+  background-image:radial-gradient(circle,rgba(77,114,255,.23) 0 1px,transparent 1.35px);
+  background-size:10px 10px; opacity:.62;
+}
+.capture{
+  position:relative; margin:0; border:1px solid var(--line-strong); background:var(--panel);
+  box-shadow:18px 18px 0 var(--blue-wash);
+}
+.capture img{aspect-ratio:16/10; object-fit:cover; object-position:top}
+.capture figcaption{
+  display:flex; justify-content:space-between; gap:18px; padding:13px 15px;
+  border-top:1px solid var(--line); color:var(--faint); font:500 10.5px/1.5 var(--mono);
+}
+.capture figcaption strong{color:var(--blue-lit); font-weight:650}
+
+.proof-section{padding:clamp(76px,10vw,132px) 0}
+.section-head{max-width:760px; margin-bottom:clamp(34px,5vw,58px)}
+h2{
+  margin:0; font-size:clamp(38px,5.3vw,68px); line-height:1;
+  letter-spacing:-.045em; font-weight:720; text-wrap:balance;
+}
+.section-head p{
+  margin:20px 0 0; max-width:57ch; color:var(--muted);
+  font-size:clamp(17px,1.5vw,19px);
+}
+.proof-grid{
+  display:grid; grid-template-columns:minmax(0,7fr) minmax(320px,5fr);
+  grid-template-rows:1fr 1fr; gap:18px;
+}
+.case{
+  display:flex; flex-direction:column; min-width:0; border:1px solid var(--line);
+  background:var(--panel); color:inherit; text-decoration:none; overflow:hidden;
+  transition:transform .22s var(--ease),border-color .22s var(--ease),background .22s var(--ease);
+}
+.case:hover,.case:focus-visible{
+  transform:translateY(-4px); border-color:var(--blue); background:var(--panel-2);
+}
+.case-primary{grid-row:1 / span 2}
+.case-media{overflow:hidden; background:#07080a; border-bottom:1px solid var(--line)}
+.case-media img{
+  aspect-ratio:16/9; object-fit:cover; object-position:top;
+  transition:transform .65s var(--ease);
+}
+.case-primary .case-media img{aspect-ratio:4/3}
+.case:hover .case-media img{transform:scale(1.018)}
+.case-copy{display:flex; flex-direction:column; flex:1; padding:clamp(20px,3vw,30px)}
+.case-title-row{display:flex; align-items:flex-start; justify-content:space-between; gap:20px}
+.case h3{
+  margin:0; font-size:clamp(24px,2.6vw,36px); line-height:1.04;
+  letter-spacing:-.035em;
+}
+.case-arrow{color:var(--blue-lit); font:500 18px var(--mono)}
+.case p{margin:14px 0 0; color:var(--muted); max-width:48ch}
+.proof-line{
+  margin-top:auto; padding-top:24px; color:var(--blue-lit);
+  font:550 11px/1.65 var(--mono);
+}
+.case:not(.case-primary) .case-copy{padding:20px 22px}
+.case:not(.case-primary) h3{font-size:clamp(22px,2.1vw,29px)}
+.case:not(.case-primary) p{font-size:15px; line-height:1.45; margin-top:9px}
+.case:not(.case-primary) .proof-line{padding-top:16px}
+
+.method{
+  border-block:1px solid var(--line); background:var(--panel);
+  padding:clamp(74px,10vw,128px) 0;
+}
+.method-grid{
+  display:grid; grid-template-columns:minmax(280px,.78fr) minmax(0,1.22fr);
+  gap:clamp(44px,8vw,110px); align-items:start;
+}
+.method h2{position:sticky; top:116px; max-width:9ch}
+.method h2 span{color:var(--blue-lit)}
+.method-list{display:grid}
+.method-item{
+  display:grid; grid-template-columns:minmax(110px,.34fr) minmax(0,1fr);
+  gap:28px; padding:28px 0; border-bottom:1px solid var(--line);
+}
+.method-item:first-child{padding-top:6px}
+.method-item:last-child{border-bottom:0}
+.method-item h3{
+  margin:0; color:var(--blue-lit); font:650 clamp(16px,1.7vw,20px)/1.35 var(--mono);
+}
+.method-item p{margin:0; color:var(--muted); font-size:clamp(17px,1.6vw,20px); max-width:46ch}
+
+.fit{padding:clamp(80px,11vw,144px) 0}
+.fit-grid{
+  display:grid; grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr);
+  gap:clamp(46px,9vw,124px); align-items:start;
+}
+.fit h2{max-width:12ch}
+.fit-intro{margin:24px 0 0; max-width:47ch; color:var(--muted); font-size:20px}
+.fit-facts{margin:4px 0 0; display:grid}
+.fit-facts div{padding:0 0 26px; margin-bottom:26px; border-bottom:1px solid var(--line)}
+.fit-facts div:last-child{margin-bottom:0}
+.fit-facts dt{color:var(--blue-lit); font:600 11px var(--mono); text-transform:uppercase; letter-spacing:.12em}
+.fit-facts dd{margin:9px 0 0; color:var(--muted); font-size:17px}
+
+.contact{padding:clamp(70px,9vw,112px) 0; border-top:1px solid var(--line)}
+.contact-in{
+  display:grid; grid-template-columns:minmax(0,1fr) auto; gap:40px; align-items:end;
+}
+.contact h2{max-width:13ch}
+.contact p{margin:20px 0 0; color:var(--muted); max-width:47ch}
+.contact .actions{margin:0; justify-content:flex-end}
+
+footer{border-top:1px solid var(--line); padding:26px 0 34px}
+.footer-in{
+  display:flex; align-items:flex-start; justify-content:space-between; gap:32px;
+  color:var(--faint); font:500 11px/1.8 var(--mono);
+}
+.footer-links{display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px 20px}
+.footer-links a{text-decoration:none}
+.footer-links a:hover,.footer-links a:focus-visible{color:var(--ink)}
+
+.hero-copy,.hero-visual{opacity:0; transform:translateY(18px)}
+.ready .hero-copy{animation:arrive .7s var(--ease) .05s forwards}
+.ready .hero-visual{animation:arrive .8s var(--ease) .16s forwards}
+@keyframes arrive{to{opacity:1; transform:none}}
+
+@media (max-width:900px){
+  .hero{min-height:auto}
+  .hero-grid,.method-grid,.fit-grid,.contact-in{grid-template-columns:1fr}
+  .hero-grid{gap:50px}
+  .hero-copy p{max-width:46ch}
+  .method h2{position:static; max-width:12ch}
+  .proof-grid{grid-template-columns:1fr; grid-template-rows:auto}
+  .case-primary{grid-row:auto}
+  .case-primary .case-media img{aspect-ratio:16/9}
+  .contact .actions{justify-content:flex-start; margin-top:0}
+}
+@media (max-width:620px){
+  .wrap{width:min(100% - 30px,1120px)}
+  header{height:62px}
+  .brand span:last-child{display:none}
+  .nav-links{gap:15px; font-size:10.5px}
+  .nav-links a:first-child{display:none}
+  .hero{min-height:calc(100dvh - 62px); padding:40px 0 52px}
+  .hero-grid{gap:42px}
+  h1{font-size:clamp(52px,17vw,70px)}
+  .hero-copy p{font-size:17px; margin-top:22px}
+  .actions{margin-top:24px}
+  .button{width:100%}
+  .hero-visual::before{inset:-14px 14px 18px -14px}
+  .capture{box-shadow:10px 10px 0 var(--blue-wash)}
+  .capture figcaption{display:block}
+  .capture figcaption span{display:block; margin-top:4px}
+  .proof-section,.method,.fit,.contact{padding-block:68px}
+  .case-media img,.case-primary .case-media img{aspect-ratio:4/3}
+  .method-grid{gap:38px}
+  .method-item{grid-template-columns:1fr; gap:9px; padding:22px 0}
+  .fit-grid{gap:42px}
+  .contact-in{gap:32px}
+  .footer-in{display:block}
+  .footer-links{justify-content:flex-start; margin-top:16px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .hero-copy,.hero-visual{opacity:1!important; transform:none!important; animation:none!important; transition:none!important}
+  .case,.case-media img,.button{transition:none}
+}
+</style>
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Person",
+  "name":"Kuba Opoczka",
+  "url":"https://smellybricc.github.io/verify/proof/",
+  "sameAs":[
+    "https://www.linkedin.com/in/kubaopoczka",
+    "https://github.com/SmellyBricc"
+  ],
+  "jobTitle":"Software Engineer",
+  "knowsAbout":[
+    "AI-assisted software development",
+    "Python",
+    "TypeScript",
+    "Software testing",
+    "Debugging",
+    "Developer tooling"
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the work</a>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="./" aria-label="Kuba Opoczka proof portfolio home">
+      <span class="mark" aria-hidden="true">KO</span>
+      <span>Kuba Opoczka</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#proof">Proof</a>
+      <a href="../cv/">Auditable CV</a>
+      <a href="https://www.linkedin.com/in/kubaopoczka" rel="me">LinkedIn</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <h1>AI builds.<span>I verify.</span></h1>
+        <p>
+          Working software, adversarial tests and public evidence from an early-career
+          builder who directs AI without trusting it blindly.
+        </p>
+        <div class="actions">
+          <a class="button" href="#proof">Choose your proof</a>
+          <a class="button secondary" href="../cv/">Open auditable CV</a>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <figure class="capture">
+          <img src="assets/cv.png" alt="Kuba's auditable CV showing four of four live checks passed" fetchpriority="high" decoding="async">
+          <figcaption>
+            <strong>Auditable CV</strong>
+            <span>Live API checks. No fallback numbers.</span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="proof-section" id="proof">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <h2>Three things I can prove.</h2>
+        <p>
+          A working product, a cryptographic verifier and a review of the bugs that
+          survived happy-path testing.
+        </p>
+      </div>
+
+      <div class="proof-grid">
+        <a class="case case-primary reveal" href="https://smellybricc.github.io/zustand-devtools-site/">
+          <div class="case-media">
+            <img src="assets/zustand.png" alt="Interactive Zustand DevTools product demonstration" loading="lazy" decoding="async">
+          </div>
+          <div class="case-copy">
+            <div class="case-title-row">
+              <h3>Zustand DevTools</h3>
+              <span class="case-arrow" aria-hidden="true">↗</span>
+            </div>
+            <p>
+              A Chrome DevTools extension for state inspection, path-level diffs,
+              time travel and shareable trace sessions.
+            </p>
+            <div class="proof-line">Product judgment / TypeScript / testing / release discipline</div>
+          </div>
+        </a>
+
+        <a class="case reveal" href="../">
+          <div class="case-media">
+            <img src="assets/verify.png" alt="DKIM signature verifier recovering a real RSA padding block" loading="lazy" decoding="async">
+          </div>
+          <div class="case-copy">
+            <div class="case-title-row">
+              <h3>Break the proof</h3>
+              <span class="case-arrow" aria-hidden="true">↗</span>
+            </div>
+            <p>A real DKIM signature, two implementations and no cryptography library.</p>
+            <div class="proof-line">Python / JavaScript / security reasoning</div>
+          </div>
+        </a>
+
+        <a class="case reveal" href="../notes/silent/">
+          <div class="case-media">
+            <img src="assets/silent.png" alt="Article explaining three silent bugs found in AI-generated code" loading="lazy" decoding="async">
+          </div>
+          <div class="case-copy">
+            <div class="case-title-row">
+              <h3>Three silent bugs</h3>
+              <span class="case-arrow" aria-hidden="true">↗</span>
+            </div>
+            <p>The failures that looked successful, and the review methods that exposed them.</p>
+            <div class="proof-line">AI oversight / debugging / negative testing</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="method">
+    <div class="wrap method-grid">
+      <h2 class="reveal">The useful skill is <span>judgment.</span></h2>
+      <div class="method-list">
+        <article class="method-item reveal">
+          <h3>Specify</h3>
+          <p>Turn a fuzzy goal into constraints, failure conditions and a definition of done.</p>
+        </article>
+        <article class="method-item reveal">
+          <h3>Direct</h3>
+          <p>Give AI bounded work, the right context and acceptance criteria it cannot negotiate away.</p>
+        </article>
+        <article class="method-item reveal">
+          <h3>Attack</h3>
+          <p>Test seams, negative cases and assumptions owned by browsers, frameworks and external APIs.</p>
+        </article>
+        <article class="method-item reveal">
+          <h3>Ship</h3>
+          <p>Release only what I can explain, reproduce and support when the happy path disappears.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="fit">
+    <div class="wrap fit-grid">
+      <div class="reveal">
+        <h2>What you would be hiring.</h2>
+        <p class="fit-intro">
+          Not a senior developer. An early-career software builder who gets unusual
+          leverage from AI and treats verification as part of the job.
+        </p>
+      </div>
+      <dl class="fit-facts reveal">
+        <div>
+          <dt>Best fit</dt>
+          <dd>AI-native product teams, developer tooling, internal automation and QA-minded engineering.</dd>
+        </div>
+        <div>
+          <dt>Strongest value</dt>
+          <dd>Turning unclear goals into tested working systems quickly.</dd>
+        </div>
+        <div>
+          <dt>Working style</dt>
+          <dd>High ownership, fast feedback, honest limits and evidence before confidence.</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="contact">
+    <div class="wrap contact-in reveal">
+      <div>
+        <h2>See whether I fit your team.</h2>
+        <p>Dublin-based and open to software engineering roles where AI leverage and verification both matter.</p>
+      </div>
+      <div class="actions">
+        <a class="button" href="https://www.linkedin.com/in/kubaopoczka">Open LinkedIn</a>
+        <a class="button secondary" href="mailto:kuba.opoczka@gmail.com?subject=Software%20role">Email Kuba</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap footer-in">
+    <span>Kuba Opoczka / software and security tooling</span>
+    <nav class="footer-links" aria-label="Portfolio">
+      <a href="../cv/">CV</a>
+      <a href="../">Signature verifier</a>
+      <a href="https://smellybricc.github.io/zustand-devtools-site/">Zustand DevTools</a>
+      <a href="../notes/silent/">AI review article</a>
+      <a href="https://github.com/SmellyBricc">GitHub</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+document.body.classList.add("ready");
+</script>
+</body>
+</html>
