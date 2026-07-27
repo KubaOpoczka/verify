@@ -120,6 +120,47 @@ h1 em{font-style:normal; color:var(--blue)}
 .key b{font-weight:700}
 .key .kv{color:var(--blue)} .key .ki{color:var(--amber)} .key .kn{color:var(--dim)}
 
+/* ---------------------------------------------------------------
+   Response fingerprint — the ornament is evidence.
+   Same density-ramp vocabulary as the signature specimen on the
+   verifier, so the two pages read as one instrument.
+   --------------------------------------------------------------- */
+.fingerprint{
+  margin-top:clamp(26px,4vw,44px);
+  border-block:1px solid var(--rule);
+  padding-block:16px;
+  background-image:radial-gradient(circle,rgba(138,169,255,.13) 0 1px,transparent 1.3px);
+  background-size:9px 9px;
+}
+.fp-head,.fp-foot{
+  display:flex; justify-content:space-between; align-items:baseline; gap:14px;
+  flex-wrap:wrap; padding:7px 10px; background:rgba(7,9,12,.9);
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--faint);
+}
+.fp-head b{color:var(--blue); font-weight:600}
+.fp-field{
+  margin:13px 0; padding:15px 12px; overflow:hidden;
+  background:rgba(7,9,12,.84); color:var(--blue);
+  font-family:var(--mono); font-size:clamp(8.5px,.92vw,11.5px); line-height:1.3;
+  letter-spacing:.16em; white-space:pre; user-select:none;
+  min-height:5.2em;
+}
+/* A band that never arrived. Distinct hue, not just a different glyph, so the
+   gap is legible at a glance and does not read as texture. */
+.fp-field .miss{color:#FF9C82}
+.fp-foot{letter-spacing:.06em; text-transform:none}
+.fp-ramp b{color:var(--blue); letter-spacing:.22em; padding:0 6px}
+.fp-miss{color:#FF9C82}
+/* Described for screen readers, which would otherwise meet a wall of punctuation. */
+.fp-sr{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+}
+@media (max-width:640px){
+  .fp-field{letter-spacing:.1em; font-size:8px}
+}
+
 /* claims: the ID is the structure, no boxes */
 .claim{
   display:grid;
@@ -248,6 +289,26 @@ footer .who{color:var(--ink); font-weight:700}
     <i><div class="n" id="s-i">0</div><div class="l">you can confirm by reading the code</div></i>
     <i><div class="n" id="s-n">0</div><div class="l">I can't prove, and say so</div></i>
   </section>
+
+  <!-- Response fingerprint. Four bands, one per endpoint, drawn from the bytes that
+       actually came back. A band that could not be fetched is drawn in the miss
+       character and says so — the field is never completed with invented data. -->
+  <aside class="fingerprint" aria-labelledby="fp-title">
+    <div class="fp-head">
+      <b id="fp-title">Response fingerprint</b>
+      <span id="fp-state">waiting for four endpoints</span>
+    </div>
+    <pre class="fp-field" id="fp-field" aria-hidden="true"></pre>
+    <p class="fp-sr" id="fp-sr">
+      A density field drawn from the raw bytes of the four API responses this page
+      requested. It is decoration with a source: nothing is drawn for a response that
+      never arrived.
+    </p>
+    <div class="fp-foot">
+      <span class="fp-ramp" aria-hidden="true">00<b> ·:-=+*#%@</b>FF<span class="fp-miss"> ×&nbsp;unreachable</span></span>
+      <span id="fp-bytes">0 bytes</span>
+    </div>
+  </aside>
 
   <div class="key" id="ledger">
     <span><b class="kv">V</b> checked live</span>
@@ -428,10 +489,17 @@ function setStamp(id, state, label){
   el.dataset.s = state;
   el.lastElementChild.textContent = label;
 }
+/* The fingerprint below is drawn from the bytes that actually came back, so the
+   raw text is kept as it arrives. Read once and parse it here rather than calling
+   r.json(), which would mean either a second read or a second request. */
+const RAW = new Map();
 async function getJSON(url){
   const r = await fetch(url,{headers:{accept:"application/json"}});
   if(!r.ok) throw new Error("HTTP " + r.status);
-  return r.json();
+  const text = await r.text();
+  const data = JSON.parse(text);
+  RAW.set(url, text);
+  return data;
 }
 
 /* Honest by construction: a value shown here was fetched, or it is not shown.
@@ -494,6 +562,96 @@ function paintTexture(payloads){
   t.appendChild(d);
 }
 
+/* ---------------------------------------------------------------
+   Response fingerprint.
+
+   One band per endpoint, drawn from that response's own bytes using the
+   same density ramp as the signature specimen on the verifier. A band
+   whose request failed is drawn in the miss glyph and counted as missing:
+   the field is never completed with invented bytes, which is the same
+   rule the rest of this page runs on.
+   --------------------------------------------------------------- */
+const RAMP = " ·:-=+*#%@";
+const ROWS_PER_BAND = 2;
+
+/* Column count is measured, not guessed. A fixed 64 left the field filling
+   about 40% of a desktop container and reading as a stray paragraph; breakpoint
+   constants just move that problem around. Measure one glyph in the field's own
+   computed font and fill the box. */
+function fpCols(field){
+  const cs = getComputedStyle(field);
+  const probe = document.createElement("span");
+  probe.style.cssText = "position:absolute;visibility:hidden;white-space:pre";
+  probe.style.fontFamily = cs.fontFamily;
+  probe.style.fontSize = cs.fontSize;
+  probe.style.letterSpacing = cs.letterSpacing;
+  probe.textContent = "0".repeat(50);
+  field.appendChild(probe);
+  const charW = probe.getBoundingClientRect().width / 50;
+  probe.remove();
+  const inner = field.clientWidth
+    - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  if (!charW || !inner) return 64;
+  return Math.max(24, Math.floor(inner / charW));
+}
+
+function renderFingerprint(){
+  const field = $("fp-field");
+  if (!field) return;
+  const cols = fpCols(field), perBand = cols * ROWS_PER_BAND;
+  const rows = [];
+  let bytes = 0, got = 0;
+
+  for (const c of checks){
+    const text = RAW.get(c.url);
+    if (!text){
+      for (let r = 0; r < ROWS_PER_BAND; r++){
+        rows.push('<span class="miss">' + "×".repeat(cols) + "</span>");
+      }
+      continue;
+    }
+    got++; bytes += text.length;
+    /* Sample across the whole response rather than the first n characters,
+       so the band reflects the entire body and not just its envelope. */
+    const stride = Math.max(1, Math.floor(text.length / perBand));
+    for (let r = 0; r < ROWS_PER_BAND; r++){
+      let row = "";
+      for (let col = 0; col < cols; col++){
+        const i = (r * cols + col) * stride;
+        const code = i < text.length ? text.charCodeAt(i) : 32;
+        /* Scaled across printable ASCII (32-126) rather than the full byte range.
+           JSON lives almost entirely in that window, so a raw /256 mapping
+           collapses into four middle glyphs and the field reads as flat noise.
+           Still a straight function of the real bytes — the scale is set to the
+           signal, the way any instrument autoranges. */
+        const norm = (code - 32) / 94;
+        row += RAMP[Math.max(0, Math.min(RAMP.length - 1, Math.floor(norm * RAMP.length)))];
+      }
+      rows.push(esc(row));
+    }
+  }
+
+  field.innerHTML = rows.join("\n");
+  const missing = checks.length - got;
+  $("fp-state").textContent = missing
+    ? `${got} of ${checks.length} responses · ${missing} unreachable`
+    : `${got} of ${checks.length} responses`;
+  $("fp-bytes").textContent = bytes.toLocaleString("en-IE") + " bytes received";
+  $("fp-sr").textContent = missing
+    ? `A density field drawn from the raw bytes of ${got} of ${checks.length} API responses.
+       ${missing} could not be fetched and are left as gaps rather than filled in.`
+    : `A density field drawn from the raw bytes of all ${checks.length} API responses
+       this page requested, ${bytes.toLocaleString("en-IE")} bytes in total.`;
+}
+
+/* Column count is breakpoint-dependent, so a rotate or resize has to redraw or
+   the field would clip. Cheap enough to run directly off a debounce. */
+let fpTimer;
+addEventListener("resize", () => {
+  clearTimeout(fpTimer);
+  fpTimer = setTimeout(renderFingerprint, 150);
+});
+
 function countTo(el, n){
   if (REDUCED || n === 0){ el.textContent = String(n); return; }
   let i = 0;
@@ -521,6 +679,7 @@ function countTo(el, n){
   }));
 
   paintTexture(payloads);
+  renderFingerprint();
   countTo($("s-v"), pass);
   countTo($("s-i"), document.querySelectorAll('.stamp[data-s="inspect"]').length);
   countTo($("s-n"), document.querySelectorAll('.stamp[data-s="unverified"]').length);

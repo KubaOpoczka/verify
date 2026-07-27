@@ -195,6 +195,112 @@ h2{
 }
 .method-item p{margin:0; color:var(--muted); font-size:clamp(17px,1.6vw,20px); max-width:46ch}
 
+/* ---------------------------------------------------------------
+   Blind spot — the field of passing tests beside the defects it
+   never saw. Shares the density-field vocabulary used by the
+   signature specimen on the verifier and the response fingerprint
+   on the CV, so all three pages read as one instrument.
+   --------------------------------------------------------------- */
+.blindspot{padding:clamp(80px,11vw,140px) 0; border-bottom:1px solid var(--line)}
+/* The instrument sticks beside the defect list, because the dim only makes its
+   point if the field is still on screen when a defect is in focus. */
+.bs-grid{
+  display:grid; grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);
+  gap:clamp(30px,4.5vw,56px) clamp(40px,6vw,80px); align-items:start;
+  grid-template-areas:
+    "copy inst"
+    "list inst"
+    "verd inst";
+}
+.bs-copy{grid-area:copy}
+.bs-instrument{grid-area:inst; position:sticky; top:110px}
+.bs-list{grid-area:list}
+.bs-verdict{grid-area:verd}
+.bs-copy h2{max-width:15ch}
+.bs-copy h2 span{display:block; color:var(--blue-lit)}
+.bs-copy p{margin:22px 0 0; color:var(--muted); font-size:clamp(17px,1.6vw,20px); max-width:50ch}
+.bs-note{font-size:15px !important; color:var(--faint) !important}
+
+.bs-instrument{
+  border-block:1px solid var(--line-strong); padding-block:14px;
+  background-image:radial-gradient(circle,rgba(77,114,255,.14) 0 1px,transparent 1.3px);
+  background-size:9px 9px;
+}
+.bs-head,.bs-foot{
+  display:flex; justify-content:space-between; align-items:baseline; gap:14px;
+  flex-wrap:wrap; padding:7px 10px; background:rgba(8,9,12,.9);
+  font:11px/1.4 var(--mono); letter-spacing:.13em; text-transform:uppercase;
+  color:var(--faint);
+}
+.bs-head b{color:var(--blue-lit); font-weight:650}
+.bs-field{
+  margin:13px 0; padding:15px 12px; background:rgba(8,9,12,.86);
+  color:var(--blue-lit); font:clamp(11px,1.15vw,14px)/1.5 var(--mono);
+  letter-spacing:.34em; white-space:pre-wrap; word-break:break-all;
+  user-select:none; transition:opacity .32s var(--ease), filter .32s var(--ease);
+}
+/* Dimming the field is the whole argument made physical: when a defect is in
+   focus, the suite has nothing to say about it. */
+.blindspot[data-dim="1"] .bs-field{opacity:.17; filter:saturate(.25)}
+.bs-field b{color:var(--blue); font-weight:400}
+.bs-foot{letter-spacing:.07em; text-transform:none}
+.bs-legend b{color:var(--blue-lit); font-weight:700; letter-spacing:0; padding-right:4px}
+.bs-sr{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+}
+
+.bs-list{list-style:none; margin:0; padding:0; display:grid}
+.bs-item{
+  display:grid; grid-template-columns:minmax(52px,.08fr) minmax(0,1fr);
+  gap:10px 24px; padding:24px 0; border-top:1px solid var(--line);
+  transition:border-color .25s var(--ease);
+}
+.bs-item:last-child{border-bottom:1px solid var(--line)}
+.bs-item:hover,.bs-item:focus-visible{border-top-color:var(--blue); outline:none}
+.bs-item:focus-visible{box-shadow:0 0 0 2px var(--blue-wash)}
+.bs-n{
+  font:650 13px var(--mono); color:var(--blue); letter-spacing:.1em;
+  grid-row:1 / span 3; align-self:start; padding-top:4px;
+}
+.bs-item h3{margin:0; font-size:clamp(17px,1.75vw,21px); line-height:1.3; max-width:34ch}
+.bs-item p{margin:0; color:var(--muted); font-size:16px; max-width:56ch}
+.bs-item code{
+  font:12.5px/1.6 var(--mono); color:var(--blue-lit); word-break:break-all;
+  background:rgba(77,114,255,.09); padding:5px 9px; justify-self:start;
+}
+.bs-verdict{
+  margin:22px 0 0; color:var(--muted);
+  font-size:clamp(16px,1.5vw,18px); max-width:62ch;
+}
+.bs-verdict a{color:var(--blue-lit); text-underline-offset:3px}
+
+/* This is content, not a flourish, so it is always present — hiding it behind
+   hover would keep it from keyboard, touch and screen-reader users entirely.
+   The hover dim on the field is the flourish; this is the fact. */
+.bs-cover{
+  /* Explicit column: .bs-n spans the first three rows of column 1, so an
+     auto-placed fourth child would drop into that 52px gutter and wrap to one
+     word per line. */
+  grid-column:2;
+  font:12px/1.5 var(--mono); color:var(--blue-lit); letter-spacing:.04em;
+}
+
+@media (max-width:860px){
+  .bs-grid{
+    grid-template-columns:minmax(0,1fr);
+    grid-template-areas:"copy" "inst" "list" "verd";
+  }
+  .bs-instrument{position:static}
+  .bs-field{letter-spacing:.24em}
+  .bs-item{grid-template-columns:minmax(0,1fr)}
+  .bs-n{grid-row:auto}
+  .bs-cover{grid-column:auto}
+}
+@media (prefers-reduced-motion:reduce){
+  .bs-field{transition:none}
+}
+
 .fit{padding:clamp(80px,11vw,144px) 0}
 .fit-grid{
   display:grid; grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr);
@@ -421,6 +527,82 @@ footer{border-top:1px solid var(--line); padding:26px 0 34px}
     </div>
   </section>
 
+  <!-- The blind spot. 257 real passing tests drawn as a field, beside the three
+       real defects that shipped through them. The defects are deliberately NOT
+       marked inside the field: none of these tests failed, and drawing them as
+       failures would be the one lie this whole site exists to argue against. -->
+  <section class="blindspot" id="blindspot">
+    <div class="wrap bs-grid">
+      <div class="bs-copy reveal">
+        <h2>257 tests, all green.<span>These three shipped anyway.</span></h2>
+        <p>
+          Every automated test I had passed. That is the uncomfortable part — none of
+          these defects announced itself, and none of them was a failure the suite
+          could have reported. A green suite is evidence that the cases you thought of
+          still work. It is not evidence that the code is right.
+        </p>
+        <p class="bs-note">
+          Point at any of the three and the suite goes quiet.
+        </p>
+      </div>
+
+      <div class="bs-instrument reveal">
+        <div class="bs-head">
+          <b>Automated test results</b>
+          <span id="bs-state">257 passing / 0 failing</span>
+        </div>
+        <div class="bs-field" id="bs-field" aria-hidden="true"></div>
+        <p class="bs-sr">
+          A field of 257 marks, one per automated test across three projects — 96 in
+          Zustand DevTools, 130 in DAEMON, 31 in Found Local. Every one passes. The
+          three defects listed below are not in this field, because no test failed.
+        </p>
+        <div class="bs-foot">
+          <span class="bs-legend"><b>·</b> one passing test</span>
+          <span>96 &middot; 130 &middot; 31</span>
+        </div>
+      </div>
+
+      <ol class="bs-list reveal">
+        <li class="bs-item">
+          <span class="bs-n">01</span>
+          <h3>A tree walk that counted siblings as depth</h3>
+          <p>
+            Any list over forty items silently lost its tail. Fixtures were small, so
+            every test passed at the only scale they measured.
+          </p>
+          <code>walk(fiber.sibling, depth + 1, out);</code>
+          <span class="bs-cover">all 257 tests still passed</span>
+        </li>
+        <li class="bs-item">
+          <span class="bs-n">02</span>
+          <h3>A shared global assigned instead of extended</h3>
+          <p>
+            It destroyed React DevTools, or was destroyed by it, depending on load
+            order. Nothing was wrong in isolation, and isolation is how it was tested.
+          </p>
+          <code>window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = { /* mine */ };</code>
+          <span class="bs-cover">all 257 tests still passed</span>
+        </li>
+        <li class="bs-item">
+          <span class="bs-n">03</span>
+          <h3>A licence check that validated instead of activating</h3>
+          <p>
+            Both endpoints return success for a real key, but only one registers an
+            instance — so the activation limit was never enforced.
+          </p>
+          <code>POST /v1/licenses/validate</code>
+          <span class="bs-cover">all 257 tests still passed</span>
+        </li>
+      </ol>
+
+      <p class="bs-verdict reveal">
+        All three were found by a review pass over finished, released code — not by the
+        suite. <a href="../notes/silent/">Read how each one got through &rarr;</a>
+      </p>
+    </div>
+  </section>
+
   <section class="fit">
     <div class="wrap fit-grid">
       <div class="reveal">
@@ -476,6 +658,34 @@ footer{border-top:1px solid var(--line); padding:26px 0 34px}
 
 <script>
 document.body.classList.add("ready");
+
+/* Blind-spot field. Real suite sizes, stated per project so the total is
+   checkable rather than asserted: 96 + 130 + 31 = 257. One mark per passing
+   test. Nothing here is generated from a placeholder count. */
+(function testField(){
+  const SUITES = [
+    { n: 96,  of: "zustand-devtools" },
+    { n: 130, of: "daemon" },
+    { n: 31,  of: "found-local" },
+  ];
+  const bs = document.getElementById("blindspot");
+  const field = document.getElementById("bs-field");
+  if (!bs || !field) return;
+
+  const total = SUITES.reduce((a, s) => a + s.n, 0);
+  field.textContent = SUITES.map(s => "·".repeat(s.n)).join("\n");
+  document.getElementById("bs-state").textContent = total + " passing / 0 failing";
+
+  /* Pointing at a defect dims the suite. Pure flourish — the reading beside
+     each defect already states the fact, so nothing is lost without a pointer.
+     The items are not focusable: they do nothing, and three dead tab stops
+     would cost keyboard users more than this effect is worth to them. */
+  const dim = on => { bs.dataset.dim = on ? "1" : "0"; };
+  bs.querySelectorAll(".bs-item").forEach(item => {
+    item.addEventListener("mouseenter", () => dim(true));
+    item.addEventListener("mouseleave", () => dim(false));
+  });
+})();
 </script>
 </body>
 </html>
