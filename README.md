@@ -3,7 +3,7 @@
 A single self-contained page that takes a real DKIM-signed email and verifies its
 2048-bit RSA signature **in the browser**, from first principles.
 
-**Live:** https://smellybricc.github.io/verify/
+**Live:** https://kubaopoczka.github.io/verify/
 
 ## What it actually does
 
@@ -51,7 +51,7 @@ embedded here — no private key.
 
 ## An auditable CV
 
-`cv/` is a CV that checks itself: <https://smellybricc.github.io/verify/cv/>
+`cv/` is a CV that checks itself: <https://kubaopoczka.github.io/verify/cv/>
 
 As it loads it queries the GitHub and npm registry APIs from the browser and fills in the real
 values — repository count, package version, publish date, licence, last push. Claims a machine

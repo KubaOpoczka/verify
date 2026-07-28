@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Auditable CV | Kuba Opoczka</title>
 <meta name="description" content="A CV that checks itself. Claims are verified live against GitHub and npm as the page loads. The ones that can't be are labelled as such.">
-<link rel="canonical" href="https://smellybricc.github.io/verify/cv/">
+<link rel="canonical" href="https://kubaopoczka.github.io/verify/cv/">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://smellybricc.github.io/verify/cv/">
+<meta property="og:url" content="https://kubaopoczka.github.io/verify/cv/">
 <meta property="og:title" content="Auditable CV | Kuba Opoczka">
 <meta property="og:description" content="A CV that checks itself. Claims are verified live against GitHub and npm as the page loads. The ones that can't be are labelled as such.">
-<meta property="og:image" content="https://smellybricc.github.io/verify/cv/og.png">
+<meta property="og:image" content="https://kubaopoczka.github.io/verify/cv/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -323,7 +323,7 @@ footer .who{color:var(--ink); font-weight:700}
         <h2 class="what">I publish working code in <strong>public repositories you can inspect</strong>.</h2>
         <span class="stamp" data-s="checking" id="t-user"><span class="d"></span><span>checking</span></span>
       </div>
-      <div class="ev" id="e-user">api.github.com/users/SmellyBricc</div>
+      <div class="ev" id="e-user">api.github.com/users/KubaOpoczka</div>
     </article>
 
     <article class="claim" data-k="v" id="V-02">
@@ -341,7 +341,7 @@ footer .who{color:var(--ink); font-weight:700}
         <h2 class="what">The Zustand DevTools extension source is <strong>public and MIT licensed</strong>.</h2>
         <span class="stamp" data-s="checking" id="t-zd"><span class="d"></span><span>checking</span></span>
       </div>
-      <div class="ev" id="e-zd">api.github.com/repos/SmellyBricc/zustand-devtools</div>
+      <div class="ev" id="e-zd">api.github.com/repos/KubaOpoczka/zustand-devtools</div>
     </article>
 
     <article class="claim" data-k="v" id="V-04">
@@ -350,7 +350,7 @@ footer .who{color:var(--ink); font-weight:700}
         <h2 class="what">The signature verifier you can try is my code, and it's <strong>still maintained</strong>.</h2>
         <span class="stamp" data-s="checking" id="t-verify"><span class="d"></span><span>checking</span></span>
       </div>
-      <div class="ev" id="e-verify">api.github.com/repos/SmellyBricc/verify</div>
+      <div class="ev" id="e-verify">api.github.com/repos/KubaOpoczka/verify</div>
     </article>
 
     <article class="claim" data-k="i" id="I-01">
@@ -376,7 +376,7 @@ footer .who{color:var(--ink); font-weight:700}
       </div>
       <div class="ev">
         Count them yourself:
-        <a href="https://github.com/SmellyBricc/zustand-devtools" rel="noopener">github.com/SmellyBricc/zustand-devtools</a>.
+        <a href="https://github.com/KubaOpoczka/zustand-devtools" rel="noopener">github.com/KubaOpoczka/zustand-devtools</a>.
         The suite runs with <span class="val">npm run check</span>.
       </div>
     </article>
@@ -469,7 +469,7 @@ footer .who{color:var(--ink); font-weight:700}
   <footer>
     <span class="who">Kuba Opoczka</span>
     <a href="https://www.linkedin.com/in/kubaopoczka" rel="noopener">LinkedIn</a>
-    <a href="https://github.com/SmellyBricc" rel="noopener">GitHub</a>
+    <a href="https://github.com/KubaOpoczka" rel="noopener">GitHub</a>
     <a href="../proof/">Proof portfolio</a>
     <a href="../">Signature verifier</a>
     <a href="../notes/silent/">Three bugs an AI wrote</a>
@@ -505,21 +505,21 @@ async function getJSON(url){
 /* Honest by construction: a value shown here was fetched, or it is not shown.
    There are no fallback numbers anywhere in this file. */
 const checks = [
-  { tag:"t-user", ev:"e-user", url:"https://api.github.com/users/SmellyBricc",
+  { tag:"t-user", ev:"e-user", url:"https://api.github.com/users/KubaOpoczka",
     ok:d => `<span class="val">${d.public_repos}</span> public repositories &middot; account created
       <span class="val">${fmtDate(d.created_at)}</span> &middot;
-      <a href="https://github.com/SmellyBricc" rel="noopener">open GitHub profile</a>` },
+      <a href="https://github.com/KubaOpoczka" rel="noopener">open GitHub profile</a>` },
   { tag:"t-npm", ev:"e-npm", url:"https://registry.npmjs.org/zustand-devtools-bridge",
     ok(d){ const v=d["dist-tags"]&&d["dist-tags"].latest; if(!v) throw new Error("no latest tag");
       return `latest <span class="val">v${esc(v)}</span> &middot; published
       <span class="val">${fmtDate(d.time[v])}</span> &middot;
       <a href="https://www.npmjs.com/package/zustand-devtools-bridge" rel="noopener">view on npm</a>`; } },
-  { tag:"t-zd", ev:"e-zd", url:"https://api.github.com/repos/SmellyBricc/zustand-devtools",
+  { tag:"t-zd", ev:"e-zd", url:"https://api.github.com/repos/KubaOpoczka/zustand-devtools",
     ok:d => `licence <span class="val">${esc((d.license&&d.license.spdx_id)||"see repo")}</span> &middot;
       language <span class="val">${esc(d.language||"unknown")}</span> &middot; last push
       <span class="val">${fmtDate(d.pushed_at)}</span> &middot;
       <a href="${esc(d.html_url)}" rel="noopener">open repository</a>` },
-  { tag:"t-verify", ev:"e-verify", url:"https://api.github.com/repos/SmellyBricc/verify",
+  { tag:"t-verify", ev:"e-verify", url:"https://api.github.com/repos/KubaOpoczka/verify",
     ok:d => `last push <span class="val">${fmtDate(d.pushed_at)}</span> &middot; default branch
       <span class="val">${esc(d.default_branch)}</span> &middot;
       <a href="${esc(d.html_url)}" rel="noopener">read the source</a>` },
