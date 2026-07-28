@@ -59,6 +59,13 @@ cannot check are labelled **INSPECT** (read the code) or **NOT PUBLIC** rather t
 verified. If an API is unreachable the row says so and links to the endpoint; it never falls back
 to a hard-coded number.
 
+The CV also checks the three July 2026 portfolio systems directly against GitHub and links
+to their live deployments:
+
+- [Faultline](https://kubaopoczka.github.io/faultline/) — deterministic distributed-systems failure lab
+- [Signal Garden](https://kubaopoczka.github.io/signal-garden/) — local-only audio-reactive generative instrument
+- [Second Order](https://kubaopoczka.github.io/second-order/) — seeded Monte Carlo decision laboratory
+
 ## Where it comes from
 
 The reference implementation is `analyzer/dkim.py` in DAEMON, an email

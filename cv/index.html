@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <title>Auditable CV | Kuba Opoczka</title>
 <meta name="description" content="A CV that checks itself. Claims are verified live against GitHub and npm as the page loads. The ones that can't be are labelled as such.">
 <link rel="canonical" href="https://kubaopoczka.github.io/verify/cv/">
@@ -280,7 +281,7 @@ footer .who{color:var(--ink); font-weight:700}
     <p class="lede" style="margin-top:16px">
       What a machine can't check is labelled as such rather than dressed up as verified.
       That's the part worth noticing. Every claim has its own link. See also the
-      <a href="../">signature verifier</a>.
+      <a href="../">signature verifier</a> and the three live systems published in July 2026.
     </p>
   </header>
 
@@ -351,6 +352,33 @@ footer .who{color:var(--ink); font-weight:700}
         <span class="stamp" data-s="checking" id="t-verify"><span class="d"></span><span>checking</span></span>
       </div>
       <div class="ev" id="e-verify">api.github.com/repos/KubaOpoczka/verify</div>
+    </article>
+
+    <article class="claim" data-k="v" id="V-05">
+      <div class="cid"><a href="#V-05" aria-label="Link to claim V-05">V05</a></div>
+      <div class="head">
+        <h2 class="what"><strong>Faultline</strong>: a deterministic distributed-systems failure lab you can break in the browser.</h2>
+        <span class="stamp" data-s="checking" id="t-faultline"><span class="d"></span><span>checking</span></span>
+      </div>
+      <div class="ev" id="e-faultline">api.github.com/repos/KubaOpoczka/faultline</div>
+    </article>
+
+    <article class="claim" data-k="v" id="V-06">
+      <div class="cid"><a href="#V-06" aria-label="Link to claim V-06">V06</a></div>
+      <div class="head">
+        <h2 class="what"><strong>Signal Garden</strong>: a local-only Web Audio system that turns sound into generative structure.</h2>
+        <span class="stamp" data-s="checking" id="t-signal"><span class="d"></span><span>checking</span></span>
+      </div>
+      <div class="ev" id="e-signal">api.github.com/repos/KubaOpoczka/signal-garden</div>
+    </article>
+
+    <article class="claim" data-k="v" id="V-07">
+      <div class="cid"><a href="#V-07" aria-label="Link to claim V-07">V07</a></div>
+      <div class="head">
+        <h2 class="what"><strong>Second Order</strong>: 10,000 seeded futures moving through a visible causal model.</h2>
+        <span class="stamp" data-s="checking" id="t-second"><span class="d"></span><span>checking</span></span>
+      </div>
+      <div class="ev" id="e-second">api.github.com/repos/KubaOpoczka/second-order</div>
     </article>
 
     <article class="claim" data-k="i" id="I-01">
@@ -438,8 +466,8 @@ footer .who{color:var(--ink); font-weight:700}
     <div>
       <h2>What this page requests</h2>
       <p>
-        Two anonymous, read-only <span class="mono">GET</span>s against endpoints serving
-        <b>already-public</b> data: the same numbers on my GitHub and npm pages.
+        Seven anonymous, read-only <span class="mono">GET</span>s against endpoints serving
+        <b>already-public</b> data: the same values on my GitHub and npm pages.
       </p>
       <p>
         There is <b>no API key or token in this page</b>, deliberately: a credential in a public
@@ -472,6 +500,9 @@ footer .who{color:var(--ink); font-weight:700}
     <a href="https://github.com/KubaOpoczka" rel="noopener">GitHub</a>
     <a href="../proof/">Proof portfolio</a>
     <a href="../">Signature verifier</a>
+    <a href="https://kubaopoczka.github.io/faultline/" rel="noopener">Faultline</a>
+    <a href="https://kubaopoczka.github.io/signal-garden/" rel="noopener">Signal Garden</a>
+    <a href="https://kubaopoczka.github.io/second-order/" rel="noopener">Second Order</a>
     <a href="../notes/silent/">Three bugs an AI wrote</a>
     <span id="stamp-time"></span>
   </footer>
@@ -522,6 +553,21 @@ const checks = [
   { tag:"t-verify", ev:"e-verify", url:"https://api.github.com/repos/KubaOpoczka/verify",
     ok:d => `last push <span class="val">${fmtDate(d.pushed_at)}</span> &middot; default branch
       <span class="val">${esc(d.default_branch)}</span> &middot;
+      <a href="${esc(d.html_url)}" rel="noopener">read the source</a>` },
+  { tag:"t-faultline", ev:"e-faultline", url:"https://api.github.com/repos/KubaOpoczka/faultline",
+    ok:d => `language <span class="val">${esc(d.language||"unknown")}</span> &middot; last push
+      <span class="val">${fmtDate(d.pushed_at)}</span> &middot;
+      <a href="${esc(d.homepage)}" rel="noopener">open live system</a> &middot;
+      <a href="${esc(d.html_url)}" rel="noopener">read the source</a>` },
+  { tag:"t-signal", ev:"e-signal", url:"https://api.github.com/repos/KubaOpoczka/signal-garden",
+    ok:d => `language <span class="val">${esc(d.language||"unknown")}</span> &middot; last push
+      <span class="val">${fmtDate(d.pushed_at)}</span> &middot;
+      <a href="${esc(d.homepage)}" rel="noopener">open live system</a> &middot;
+      <a href="${esc(d.html_url)}" rel="noopener">read the source</a>` },
+  { tag:"t-second", ev:"e-second", url:"https://api.github.com/repos/KubaOpoczka/second-order",
+    ok:d => `language <span class="val">${esc(d.language||"unknown")}</span> &middot; last push
+      <span class="val">${fmtDate(d.pushed_at)}</span> &middot;
+      <a href="${esc(d.homepage)}" rel="noopener">open live system</a> &middot;
       <a href="${esc(d.html_url)}" rel="noopener">read the source</a>` },
 ];
 
