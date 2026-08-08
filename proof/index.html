@@ -473,6 +473,20 @@ footer{border-top:1px solid var(--line); padding:26px 0 34px}
           </div>
         </a>
 
+        <a class="case reveal" href="https://evidence-studio-site.pages.dev/">
+          <div class="case-media">
+            <img src="assets/evidence.png" alt="Evidence Studio accessibility findings and report workspace" loading="lazy" decoding="async">
+          </div>
+          <div class="case-copy">
+            <div class="case-title-row">
+              <h3>Evidence Studio</h3>
+              <span class="case-arrow" aria-hidden="true">↗</span>
+            </div>
+            <p>A local-first workspace for accessibility evidence, protected screenshots, retests and client-ready reports.</p>
+            <div class="proof-line">Accessibility / privacy boundaries / Chrome MV3 / release discipline</div>
+          </div>
+        </a>
+
         <a class="case reveal" href="../">
           <div class="case-media">
             <img src="assets/verify.png" alt="DKIM signature verifier recovering a real RSA padding block" loading="lazy" decoding="async">
@@ -528,14 +542,14 @@ footer{border-top:1px solid var(--line); padding:26px 0 34px}
     </div>
   </section>
 
-  <!-- The blind spot. 257 real passing tests drawn as a field, beside the three
+  <!-- The blind spot. 261 real passing tests drawn as a field, beside the three
        real defects that shipped through them. The defects are deliberately NOT
        marked inside the field: none of these tests failed, and drawing them as
        failures would be the one lie this whole site exists to argue against. -->
   <section class="blindspot" id="blindspot">
     <div class="wrap bs-grid">
       <div class="bs-copy reveal">
-        <h2>257 tests, all green.<span>These three shipped anyway.</span></h2>
+        <h2>261 tests, all green.<span>These three shipped anyway.</span></h2>
         <p>
           Every automated test I had passed. That is the uncomfortable part — none of
           these defects announced itself, and none of them was a failure the suite
@@ -550,17 +564,17 @@ footer{border-top:1px solid var(--line); padding:26px 0 34px}
       <div class="bs-instrument reveal">
         <div class="bs-head">
           <b>Automated test results</b>
-          <span id="bs-state">257 passing / 0 failing</span>
+          <span id="bs-state">261 passing / 0 failing</span>
         </div>
         <div class="bs-field" id="bs-field" aria-hidden="true"></div>
         <p class="bs-sr">
-          A field of 257 marks, one per automated test across three projects — 96 in
+          A field of 261 marks, one per automated test across three projects — 100 in
           Zustand DevTools, 130 in DAEMON, 31 in Found Local. Every one passes. The
           three defects listed below are not in this field, because no test failed.
         </p>
         <div class="bs-foot">
           <span class="bs-legend"><b>·</b> one passing test</span>
-          <span>96 &middot; 130 &middot; 31</span>
+          <span>100 &middot; 130 &middot; 31</span>
         </div>
       </div>
 
@@ -573,7 +587,7 @@ footer{border-top:1px solid var(--line); padding:26px 0 34px}
             every test passed at the only scale they measured.
           </p>
           <code>walk(fiber.sibling, depth + 1, out);</code>
-          <span class="bs-cover">all 257 tests still passed</span>
+          <span class="bs-cover">all 261 tests still passed</span>
         </li>
         <li class="bs-item">
           <span class="bs-n">02</span>
@@ -583,7 +597,7 @@ footer{border-top:1px solid var(--line); padding:26px 0 34px}
             order. Nothing was wrong in isolation, and isolation is how it was tested.
           </p>
           <code>window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = { /* mine */ };</code>
-          <span class="bs-cover">all 257 tests still passed</span>
+          <span class="bs-cover">all 261 tests still passed</span>
         </li>
         <li class="bs-item">
           <span class="bs-n">03</span>
@@ -593,7 +607,7 @@ footer{border-top:1px solid var(--line); padding:26px 0 34px}
             instance — so the activation limit was never enforced.
           </p>
           <code>POST /v1/licenses/validate</code>
-          <span class="bs-cover">all 257 tests still passed</span>
+          <span class="bs-cover">all 261 tests still passed</span>
         </li>
       </ol>
 
@@ -661,11 +675,11 @@ footer{border-top:1px solid var(--line); padding:26px 0 34px}
 document.body.classList.add("ready");
 
 /* Blind-spot field. Real suite sizes, stated per project so the total is
-   checkable rather than asserted: 96 + 130 + 31 = 257. One mark per passing
+   checkable rather than asserted: 100 + 130 + 31 = 261. One mark per passing
    test. Nothing here is generated from a placeholder count. */
 (function testField(){
   const SUITES = [
-    { n: 96,  of: "zustand-devtools" },
+    { n: 100, of: "zustand-devtools" },
     { n: 130, of: "daemon" },
     { n: 31,  of: "found-local" },
   ];
